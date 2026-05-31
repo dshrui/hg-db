@@ -544,19 +544,6 @@
       font-size: 13px;
     }
 
-    .public-view .calendar-tools {
-      display: none;
-    }
-
-    .public-view input,
-    .public-view select,
-    .public-view textarea {
-      pointer-events: none;
-      color: var(--ink);
-      background: #ffffff;
-      opacity: 1;
-    }
-
     .month-calendar-wrap {
       overflow-x: auto;
       padding-bottom: 4px;
@@ -873,14 +860,14 @@
     }
   </style>
 </head>
-<body class="public-view">
+<body>
   <div class="page">
     <div class="hero">
       <div>
         <p class="eyebrow">HG Services Internal Launch Control</p>
         <h1>June Launch Control: Marketing Foundation, Content Planning, and Execution</h1>
         <p class="subtitle">
-          A partner-safe dashboard for reviewing HG's first-month marketing launch across channel setup, reinstatement positioning, content production, approvals, publishing, and reporting.
+          A working dashboard for managing HG's first-month marketing launch across channel setup, reinstatement positioning, content production, approvals, publishing, reporting, and Google Sheet backup.
         </p>
         <div class="cta-line" aria-label="Launch focus">
           <span class="status">Foundation month</span>
@@ -929,6 +916,46 @@
 
     <div class="layout">
       <div>
+        <div class="content-section" aria-labelledby="database">
+          <div class="section-heading">
+            <div>
+              <h2 id="database">Database And Progress Tracker</h2>
+              <p>Use this panel to save checklist answers, fixes, due dates, and June calendar planning in this browser. Export the database when you want a backup or need to move it to another device.</p>
+            </div>
+            <span class="tag">Local database</span>
+          </div>
+          <div class="database-panel">
+            <div class="database-card">
+              <h3>Save And Backup</h3>
+              <p>The data is stored locally in this browser. It is not sent online and does not sync automatically.</p>
+              <div class="database-actions">
+                <button type="button" data-save-database>Save database</button>
+                <button type="button" class="secondary" data-export-database>Export JSON</button>
+                <button type="button" class="danger" data-clear-database>Clear database</button>
+              </div>
+              <p class="database-status" data-database-status>Database ready.</p>
+            </div>
+            <div class="database-card">
+              <h3>Import Backup</h3>
+              <p>Paste a previously exported JSON backup, then import it to restore checklist and calendar planning.</p>
+              <textarea class="import-box" data-import-database aria-label="Paste database JSON backup"></textarea>
+              <div class="database-actions">
+                <button type="button" class="secondary" data-import-database-button>Import JSON</button>
+              </div>
+            </div>
+            <div class="database-card">
+              <h3>Google Sheet Sync</h3>
+              <p>The Apps Script web app URL is configured on the backend, so it is hidden from the page source and from partner view.</p>
+              <div class="database-actions">
+                <button type="button" class="secondary" data-push-google-sheet>Push to Google Sheet</button>
+                <button type="button" class="secondary" data-pull-google-sheet>Pull from Google Sheet</button>
+                <button type="button" class="danger" data-logout>Log out</button>
+              </div>
+              <p class="database-status" data-sheet-status>Google Sheet sync uses the backend connection.</p>
+            </div>
+          </div>
+        </div>
+
         <div class="content-section" aria-labelledby="snapshot">
           <div class="section-heading">
             <div>
@@ -1833,11 +1860,501 @@
   </div>
   <script>
     (function () {
-      var controls = Array.prototype.slice.call(document.querySelectorAll("input, select, textarea"));
-      controls.forEach(function (control) {
-        control.disabled = true;
-        control.setAttribute("aria-disabled", "true");
-      });
+      var databaseKey = "hg-services-marketing-launch-database-v1";
+      var legacyCalendarPrefix = "hg-services-june-2026-";
+      var calendarFields = Array.prototype.slice.call(document.querySelectorAll("[data-calendar-note]"));
+      var checklistItems = Array.prototype.slice.call(document.querySelectorAll(".check-item"));
+      var channelRows = Array.prototype.slice.call(document.querySelectorAll("[data-channel-row]"));
+      var contentRows = Array.prototype.slice.call(document.querySelectorAll("[data-content-row]"));
+      var calendarStatus = document.querySelector("[data-calendar-status]");
+      var databaseStatus = document.querySelector("[data-database-status]");
+      var saveDatabaseButton = document.querySelector("[data-save-database]");
+      var exportDatabaseButton = document.querySelector("[data-export-database]");
+      var clearDatabaseButton = document.querySelector("[data-clear-database]");
+      var importDatabaseBox = document.querySelector("[data-import-database]");
+      var importDatabaseButton = document.querySelector("[data-import-database-button]");
+      var saveCalendarButton = document.querySelector("[data-save-calendar]");
+      var clearCalendarButton = document.querySelector("[data-clear-calendar]");
+      var pushGoogleSheetButton = document.querySelector("[data-push-google-sheet]");
+      var pullGoogleSheetButton = document.querySelector("[data-pull-google-sheet]");
+      var logoutButton = document.querySelector("[data-logout]");
+      var sheetStatus = document.querySelector("[data-sheet-status]");
+      var database = loadDatabase();
+
+      function emptyDatabase() {
+        return {
+          version: 1,
+          updatedAt: "",
+          checklists: {},
+          calendar: {},
+          channels: {},
+          contentPlan: {},
+          settings: {}
+        };
+      }
+
+      function normalizeDatabase(value) {
+        var normalized = value && typeof value === "object" ? value : emptyDatabase();
+        normalized.version = 1;
+        normalized.updatedAt = normalized.updatedAt || "";
+        normalized.checklists = normalized.checklists && typeof normalized.checklists === "object" ? normalized.checklists : {};
+        normalized.calendar = normalized.calendar && typeof normalized.calendar === "object" ? normalized.calendar : {};
+        normalized.channels = normalized.channels && typeof normalized.channels === "object" ? normalized.channels : {};
+        normalized.contentPlan = normalized.contentPlan && typeof normalized.contentPlan === "object" ? normalized.contentPlan : {};
+        normalized.settings = normalized.settings && typeof normalized.settings === "object" ? normalized.settings : {};
+        return normalized;
+      }
+
+      function loadDatabase() {
+        try {
+          var saved = window.localStorage.getItem(databaseKey);
+          if (saved) {
+            return normalizeDatabase(JSON.parse(saved));
+          }
+        } catch (error) {
+          setStatus("Database could not be loaded. The page is still editable.");
+        }
+        return emptyDatabase();
+      }
+
+      function setStatus(message) {
+        if (databaseStatus) {
+          databaseStatus.textContent = message;
+        }
+        if (calendarStatus) {
+          calendarStatus.textContent = message;
+        }
+      }
+
+      function setSheetStatus(message) {
+        if (sheetStatus) {
+          sheetStatus.textContent = message;
+        }
+      }
+
+      function saveDatabase(message) {
+        try {
+          database.updatedAt = new Date().toISOString();
+          window.localStorage.setItem(databaseKey, JSON.stringify(database));
+          setStatus(message || "Database saved.");
+        } catch (error) {
+          setStatus("Database could not be saved. Export JSON after editing if possible.");
+        }
+      }
+
+      function createField(fieldType, labelText, value, options) {
+        var wrapper = document.createElement("div");
+        var label = document.createElement("label");
+        var field;
+        wrapper.className = "db-field";
+        label.textContent = labelText;
+
+        if (fieldType === "select") {
+          field = document.createElement("select");
+          options.forEach(function (optionText) {
+            var option = document.createElement("option");
+            option.value = optionText;
+            option.textContent = optionText;
+            field.appendChild(option);
+          });
+        } else if (fieldType === "date") {
+          field = document.createElement("input");
+          field.type = "date";
+        } else {
+          field = document.createElement("textarea");
+        }
+
+        field.value = value || "";
+        wrapper.appendChild(label);
+        wrapper.appendChild(field);
+        return {
+          wrapper: wrapper,
+          field: field
+        };
+      }
+
+      function findSectionTitle(item) {
+        var section = item.closest(".content-section");
+        var heading = section ? section.querySelector("h2") : null;
+        return heading ? heading.textContent.trim() : "";
+      }
+
+      function fieldsForRow(row, selector) {
+        return Array.prototype.slice.call(row.querySelectorAll(selector));
+      }
+
+      function readRowFields(row, selector) {
+        var values = {};
+        fieldsForRow(row, selector).forEach(function (field) {
+          var key = field.dataset.channelField || field.dataset.contentField;
+          if (key) {
+            values[key] = field.value || "";
+          }
+        });
+        return values;
+      }
+
+      function writeRowFields(row, selector, record) {
+        fieldsForRow(row, selector).forEach(function (field) {
+          var key = field.dataset.channelField || field.dataset.contentField;
+          if (key && Object.prototype.hasOwnProperty.call(record, key)) {
+            field.value = record[key] || "";
+          }
+        });
+      }
+
+      function setupChannelDatabase() {
+        channelRows.forEach(function (row) {
+          var id = row.dataset.channelRow;
+          var defaults = readRowFields(row, "[data-channel-field]");
+          var record = Object.assign({ channel: row.querySelector(".row-label") ? row.querySelector(".row-label").textContent.trim() : id }, defaults, database.channels[id] || {});
+          database.channels[id] = record;
+          writeRowFields(row, "[data-channel-field]", record);
+
+          fieldsForRow(row, "[data-channel-field]").forEach(function (field) {
+            field.addEventListener("input", function () {
+              var key = field.dataset.channelField;
+              database.channels[id][key] = field.value;
+              saveDatabase("Channel setup saved.");
+            });
+            field.addEventListener("change", function () {
+              var key = field.dataset.channelField;
+              database.channels[id][key] = field.value;
+              saveDatabase("Channel setup saved.");
+            });
+          });
+        });
+      }
+
+      function setupContentPlanDatabase() {
+        contentRows.forEach(function (row) {
+          var id = row.dataset.contentRow;
+          var defaults = readRowFields(row, "[data-content-field]");
+          var record = Object.assign({ id: id }, defaults, database.contentPlan[id] || {});
+          database.contentPlan[id] = record;
+          writeRowFields(row, "[data-content-field]", record);
+
+          fieldsForRow(row, "[data-content-field]").forEach(function (field) {
+            field.addEventListener("input", function () {
+              var key = field.dataset.contentField;
+              database.contentPlan[id][key] = field.value;
+              saveDatabase("Content plan saved.");
+            });
+            field.addEventListener("change", function () {
+              var key = field.dataset.contentField;
+              database.contentPlan[id][key] = field.value;
+              saveDatabase("Content plan saved.");
+            });
+          });
+        });
+      }
+
+      function setupChecklistDatabase() {
+        checklistItems.forEach(function (item, index) {
+          var id = item.dataset.checklistId || "checklist-" + String(index + 1).padStart(2, "0");
+          var checkbox = item.querySelector("input[type='checkbox']");
+          var title = item.querySelector(".check-copy strong");
+          var sectionTitle = findSectionTitle(item);
+          var record = database.checklists[id] || {};
+          var statusField = createField("select", "Status", record.status || "Not started", [
+            "Not started",
+            "In progress",
+            "Waiting client",
+            "Needs fix",
+            "Done"
+          ]);
+          var dueField = createField("date", "Deadline", record.deadline || "");
+          var answerField = createField("textarea", "Answer / current state", record.answer || "");
+          var fixField = createField("textarea", "Fix / next action", record.fix || "");
+          var extra = document.createElement("div");
+
+          item.dataset.checklistId = id;
+          extra.className = "check-extra";
+          extra.appendChild(statusField.wrapper);
+          extra.appendChild(dueField.wrapper);
+          extra.appendChild(answerField.wrapper);
+          extra.appendChild(fixField.wrapper);
+          item.appendChild(extra);
+
+          database.checklists[id] = {
+            section: record.section || sectionTitle,
+            title: title ? title.textContent.trim() : "Checklist item " + (index + 1),
+            done: Boolean(record.done),
+            status: record.status || "Not started",
+            deadline: record.deadline || "",
+            answer: record.answer || "",
+            fix: record.fix || ""
+          };
+
+          if (checkbox) {
+            checkbox.checked = Boolean(database.checklists[id].done);
+            checkbox.addEventListener("change", function () {
+              database.checklists[id].done = checkbox.checked;
+              if (checkbox.checked) {
+                database.checklists[id].status = "Done";
+                statusField.field.value = "Done";
+              } else if (statusField.field.value === "Done") {
+                database.checklists[id].status = "Not started";
+                statusField.field.value = "Not started";
+              }
+              saveDatabase("Checklist saved.");
+            });
+          }
+
+          statusField.field.addEventListener("change", function () {
+            database.checklists[id].status = statusField.field.value;
+            database.checklists[id].done = statusField.field.value === "Done";
+            if (checkbox) {
+              checkbox.checked = database.checklists[id].done;
+            }
+            saveDatabase("Checklist saved.");
+          });
+
+          dueField.field.addEventListener("input", function () {
+            database.checklists[id].deadline = dueField.field.value;
+            saveDatabase("Deadline saved.");
+          });
+
+          answerField.field.addEventListener("input", function () {
+            database.checklists[id].answer = answerField.field.value;
+            saveDatabase("Answer saved.");
+          });
+
+          fixField.field.addEventListener("input", function () {
+            database.checklists[id].fix = fixField.field.value;
+            saveDatabase("Fix action saved.");
+          });
+        });
+      }
+
+      function setupCalendarDatabase() {
+        calendarFields.forEach(function (field) {
+          var date = field.dataset.calendarNote;
+          var defaultValue = field.value;
+
+          if (!Object.prototype.hasOwnProperty.call(database.calendar, date)) {
+            try {
+              var legacyValue = window.localStorage.getItem(legacyCalendarPrefix + date);
+              database.calendar[date] = legacyValue !== null ? legacyValue : defaultValue;
+            } catch (error) {
+              database.calendar[date] = defaultValue;
+            }
+          }
+
+          field.value = database.calendar[date];
+          field.addEventListener("input", function () {
+            database.calendar[date] = field.value;
+            saveDatabase("Calendar saved.");
+          });
+        });
+      }
+
+      function applyImportedDatabase(nextDatabase) {
+        database = normalizeDatabase(nextDatabase);
+
+        checklistItems.forEach(function (item) {
+          var id = item.dataset.checklistId;
+          var record = database.checklists[id] || {};
+          var title = item.querySelector(".check-copy strong");
+          var sectionTitle = findSectionTitle(item);
+          var checkbox = item.querySelector("input[type='checkbox']");
+          var fields = item.querySelectorAll(".check-extra select, .check-extra input, .check-extra textarea");
+
+          database.checklists[id] = {
+            section: record.section || sectionTitle,
+            title: record.title || (title ? title.textContent.trim() : id),
+            done: Boolean(record.done),
+            status: record.status || "Not started",
+            deadline: record.deadline || "",
+            answer: record.answer || "",
+            fix: record.fix || ""
+          };
+          record = database.checklists[id];
+
+          if (checkbox) {
+            checkbox.checked = record.done;
+          }
+          if (fields[0]) {
+            fields[0].value = record.status;
+          }
+          if (fields[1]) {
+            fields[1].value = record.deadline;
+          }
+          if (fields[2]) {
+            fields[2].value = record.answer;
+          }
+          if (fields[3]) {
+            fields[3].value = record.fix;
+          }
+        });
+
+        calendarFields.forEach(function (field) {
+          var date = field.dataset.calendarNote;
+          database.calendar[date] = Object.prototype.hasOwnProperty.call(database.calendar, date) ? database.calendar[date] : field.defaultValue;
+          field.value = database.calendar[date];
+        });
+
+        channelRows.forEach(function (row) {
+          var id = row.dataset.channelRow;
+          var defaults = readRowFields(row, "[data-channel-field]");
+          database.channels[id] = Object.assign({ channel: row.querySelector(".row-label") ? row.querySelector(".row-label").textContent.trim() : id }, defaults, database.channels[id] || {});
+          writeRowFields(row, "[data-channel-field]", database.channels[id]);
+        });
+
+        contentRows.forEach(function (row) {
+          var id = row.dataset.contentRow;
+          var defaults = readRowFields(row, "[data-content-field]");
+          database.contentPlan[id] = Object.assign({ id: id }, defaults, database.contentPlan[id] || {});
+          writeRowFields(row, "[data-content-field]", database.contentPlan[id]);
+        });
+
+        saveDatabase("Database imported.");
+      }
+
+      function pushToGoogleSheet() {
+        saveDatabase("Preparing Google Sheet sync.");
+        setSheetStatus("Sending tracker database to Google Sheet...");
+
+        var payload = {
+          source: "HG Services HTML tracker",
+          database: database
+        };
+
+        fetch("/api/sheet/push", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).then(function (response) {
+          if (!response.ok) {
+            throw new Error("Push failed");
+          }
+          return response.json();
+        }).then(function () {
+          setSheetStatus("Pushed to Google Sheet through backend.");
+        }).catch(function () {
+          setSheetStatus("Google Sheet push failed. Check backend env and Apps Script deployment.");
+        });
+      }
+
+      function pullFromGoogleSheet() {
+        setSheetStatus("Pulling tracker database from Google Sheet...");
+
+        fetch("/api/sheet/pull").then(function (response) {
+          if (!response.ok) {
+            throw new Error("Pull failed");
+          }
+          return response.json();
+        }).then(function (response) {
+          if (response && response.ok && response.database) {
+            applyImportedDatabase(response.database);
+            setSheetStatus("Pulled latest data from Google Sheet.");
+          } else {
+            setSheetStatus("Google Sheet response did not include tracker data.");
+          }
+        }).catch(function () {
+          setSheetStatus("Google Sheet pull failed. Check the Apps Script URL and deployment access.");
+        });
+      }
+
+      function exportDatabase() {
+        saveDatabase("Database saved for export.");
+        var json = JSON.stringify(database, null, 2);
+        var blob = new Blob([json], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "hg-services-marketing-launch-database.json";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function clearDatabase() {
+        if (!window.confirm("Clear saved checklist answers, fixes, deadlines, and calendar notes from this browser?")) {
+          return;
+        }
+
+        try {
+          window.localStorage.removeItem(databaseKey);
+        } catch (error) {
+          setStatus("Database could not be cleared.");
+          return;
+        }
+
+        applyImportedDatabase(emptyDatabase());
+        setStatus("Database cleared.");
+      }
+
+      function clearCalendar() {
+        if (!window.confirm("Clear all June calendar notes?")) {
+          return;
+        }
+
+        calendarFields.forEach(function (field) {
+          var date = field.dataset.calendarNote;
+          field.value = "";
+          database.calendar[date] = "";
+        });
+        saveDatabase("Calendar cleared.");
+      }
+
+      setupChecklistDatabase();
+      setupCalendarDatabase();
+      setupChannelDatabase();
+      setupContentPlanDatabase();
+      saveDatabase("Database ready.");
+
+      if (saveDatabaseButton) {
+        saveDatabaseButton.addEventListener("click", function () {
+          saveDatabase("Database saved.");
+        });
+      }
+
+      if (exportDatabaseButton) {
+        exportDatabaseButton.addEventListener("click", exportDatabase);
+      }
+
+      if (clearDatabaseButton) {
+        clearDatabaseButton.addEventListener("click", clearDatabase);
+      }
+
+      if (importDatabaseButton) {
+        importDatabaseButton.addEventListener("click", function () {
+          try {
+            applyImportedDatabase(JSON.parse(importDatabaseBox.value));
+            importDatabaseBox.value = "";
+          } catch (error) {
+            setStatus("Import failed. Paste a valid exported JSON backup.");
+          }
+        });
+      }
+
+      if (saveCalendarButton) {
+        saveCalendarButton.addEventListener("click", function () {
+          saveDatabase("Calendar saved.");
+        });
+      }
+
+      if (clearCalendarButton) {
+        clearCalendarButton.addEventListener("click", clearCalendar);
+      }
+
+      if (pushGoogleSheetButton) {
+        pushGoogleSheetButton.addEventListener("click", pushToGoogleSheet);
+      }
+
+      if (pullGoogleSheetButton) {
+        pullGoogleSheetButton.addEventListener("click", pullFromGoogleSheet);
+      }
+
+      if (logoutButton) {
+        logoutButton.addEventListener("click", function () {
+          fetch("/api/logout", { method: "POST" }).finally(function () {
+            window.location.href = "/login";
+          });
+        });
+      }
     })();
   </script>
 </body>

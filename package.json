@@ -1,0 +1,13 @@
+{
+  "name": "hg-services-launch-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend and password-protected backend for the HG Services June launch tracker.",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -9,7 +9,7 @@
   5. Deploy > New deployment > Web app.
   6. Execute as: Me.
   7. Who has access: Anyone with the link.
-  8. Copy the Web app URL into the HTML page's Google Sheet Sync field.
+  8. Add the Web app URL as the backend APPS_SCRIPT_URL environment variable.
 
   If this script is bound to the Google Sheet, leave SPREADSHEET_ID blank.
   If this script is standalone, paste the target spreadsheet ID below.
@@ -112,7 +112,7 @@ function setupSheet() {
     ["client", "HG Services", "Client name"],
     ["month", "June 2026", "Launch month"],
     ["channels", "Facebook, Instagram, XiaoHongShu, TikTok", "Active launch channels"],
-    ["source_html", "month-1-marketing-launch-checklist.html", "Standalone HTML tracker"],
+    ["source_html", "private/admin.html", "Backend admin tracker"],
     ["last_sync", "", "Updated by this script"],
   ]);
   syncLog.getRange(1, 1, 1, 7).setValues([["Timestamp", "Action", "Source", "Checklist Items", "Calendar Days", "Channels", "Content Rows"]]);
