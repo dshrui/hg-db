@@ -9,7 +9,8 @@ The project now has two surfaces:
 
 ## What This Includes
 
-- `index.html` - partner-safe frontend without database or Google Sheet controls.
+- `index.html` - partner-safe frontend without database or Google Sheet controls for the Node backend.
+- `docs/index.html` - same partner-safe frontend published by GitHub Pages.
 - `private/admin.html` - admin dashboard with database tools and Google Sheet sync buttons.
 - `login.html` - backend login screen.
 - `server.js` - password-protected backend and Google Sheet proxy.
@@ -65,4 +66,5 @@ Then open:
 - The admin page requires backend login.
 - No Google credentials or Apps Script URL are stored in the frontend HTML.
 - The Google Sheet acts as backup, reporting database, and recovery source.
-- GitHub Pages can only serve the partner-safe static frontend. Use a Node-capable host for the protected backend.
+- GitHub Pages is configured to publish from `docs/` so backend files are not served by the live static site.
+- Use a Node-capable host for the protected backend.
