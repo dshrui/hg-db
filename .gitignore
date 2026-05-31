@@ -1,0 +1,12 @@
+.DS_Store
+outputs/
+node_modules/
+*.xlsx
+*.xls
+*.xlsm
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.log

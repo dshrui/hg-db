@@ -1,0 +1,2413 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HG Services June Launch Control</title>
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #d9e1e8;
+      --soft: #f6f8fa;
+      --panel: #ffffff;
+      --brand: #1769aa;
+      --brand-dark: #104d7d;
+      --green: #1f7a5c;
+      --gold: #a15c07;
+      --red: #b42318;
+      --shadow: 0 10px 28px rgba(31, 41, 51, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+      background: #eef2f5;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      padding: 28px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--brand);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(30px, 4vw, 48px);
+    }
+
+    h2 {
+      font-size: 22px;
+    }
+
+    h3 {
+      font-size: 17px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .header-meta {
+      min-width: 220px;
+      padding: 16px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .meta-row:last-child {
+      border-bottom: 0;
+    }
+
+    .meta-label {
+      color: var(--muted);
+    }
+
+    .meta-value {
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .metric {
+      min-height: 118px;
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--brand-dark);
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 20px;
+      margin-top: 20px;
+      align-items: start;
+    }
+
+    .content-section,
+    .sidebar {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .content-section {
+      margin-bottom: 20px;
+      padding: 24px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 18px;
+      padding: 20px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-heading p {
+      max-width: 620px;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      color: var(--brand-dark);
+      background: #eaf4fb;
+      border: 1px solid #b9d9ee;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .check-item {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 10px;
+      align-items: start;
+      min-height: 44px;
+      padding: 10px 12px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .check-item input {
+      width: 18px;
+      height: 18px;
+      margin: 2px 0 0;
+      accent-color: var(--green);
+    }
+
+    .check-copy {
+      min-width: 0;
+    }
+
+    .check-copy strong {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 15px;
+    }
+
+    .check-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .check-extra {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: 170px 170px 1fr 1fr;
+      gap: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    .db-field {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .db-field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .db-field select,
+    .db-field input,
+    .db-field textarea,
+    .import-box {
+      width: 100%;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .db-field select,
+    .db-field input {
+      min-height: 38px;
+      padding: 7px 8px;
+    }
+
+    .db-field textarea,
+    .import-box {
+      min-height: 74px;
+      resize: vertical;
+      padding: 8px;
+      line-height: 1.35;
+    }
+
+    .db-field select:focus,
+    .db-field input:focus,
+    .db-field textarea:focus,
+    .import-box:focus {
+      outline: 2px solid #b9d9ee;
+      border-color: var(--brand);
+    }
+
+    .database-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .database-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .database-card {
+      padding: 16px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .database-card h3 {
+      margin-bottom: 8px;
+      color: var(--brand-dark);
+    }
+
+    .database-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .database-status {
+      margin-top: 10px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .snapshot-card {
+      min-height: 130px;
+      padding: 16px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .snapshot-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--brand-dark);
+      font-size: 15px;
+    }
+
+    .snapshot-card span,
+    .source-links a {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .source-links a {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 4px 9px;
+      color: var(--brand-dark);
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      text-decoration: none;
+    }
+
+    .source-links a:hover {
+      border-color: var(--brand);
+    }
+
+    .tracker-table-wrap {
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tracker-table {
+      width: 100%;
+      min-width: 1040px;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .tracker-table th,
+    .tracker-table td {
+      vertical-align: top;
+      padding: 10px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .tracker-table th {
+      color: #ffffff;
+      background: var(--brand);
+      font-weight: 700;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .tracker-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .tracker-table th:last-child,
+    .tracker-table td:last-child {
+      border-right: 0;
+    }
+
+    .tracker-table input,
+    .tracker-table select,
+    .tracker-table textarea {
+      width: 100%;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .tracker-table input,
+    .tracker-table select {
+      min-height: 36px;
+      padding: 7px 8px;
+    }
+
+    .tracker-table textarea {
+      min-height: 74px;
+      resize: vertical;
+      padding: 8px;
+      line-height: 1.35;
+    }
+
+    .tracker-table input:focus,
+    .tracker-table select:focus,
+    .tracker-table textarea:focus {
+      outline: 2px solid #b9d9ee;
+      border-color: var(--brand);
+    }
+
+    .row-label {
+      min-width: 120px;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .pillar {
+      padding: 14px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .pillar strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 15px;
+    }
+
+    .pillar span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .week {
+      min-width: 0;
+      padding: 16px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .week h3 {
+      margin-bottom: 10px;
+      color: var(--brand-dark);
+    }
+
+    .week ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .calendar-tools {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-save-status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .month-calendar-wrap {
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .month-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(104px, 1fr));
+      gap: 8px;
+      min-width: 820px;
+    }
+
+    .calendar-weekday,
+    .calendar-day {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .calendar-weekday {
+      padding: 9px 8px;
+      color: var(--brand-dark);
+      background: #eaf4fb;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .calendar-day {
+      min-height: 142px;
+      padding: 10px;
+      background: var(--soft);
+    }
+
+    .calendar-day.empty {
+      background: #f0f3f6;
+      border-style: dashed;
+    }
+
+    .day-number {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--brand-dark);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .day-number span {
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .calendar-day textarea {
+      width: 100%;
+      min-height: 92px;
+      resize: vertical;
+      padding: 8px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .calendar-day textarea:focus {
+      outline: 2px solid #b9d9ee;
+      border-color: var(--brand);
+    }
+
+    .side-block {
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .side-block:last-child {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .side-block h2 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .compact-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .compact-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .compact-list li:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .compact-list strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .note {
+      padding: 14px;
+      color: #684200;
+      background: #fff8e5;
+      border: 1px solid #f0cf80;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .cta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .status {
+      min-height: 28px;
+      padding: 4px 9px;
+      color: var(--green);
+      background: #eaf7f0;
+      border: 1px solid #b9dec9;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status.warning {
+      color: var(--gold);
+      background: #fff8e5;
+      border-color: #f0cf80;
+    }
+
+    .status.red {
+      color: var(--red);
+      background: #fff0ed;
+      border-color: #f3b8b1;
+    }
+
+    .print-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    button {
+      min-height: 40px;
+      padding: 8px 14px;
+      color: #ffffff;
+      background: var(--brand);
+      border: 0;
+      border-radius: 6px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--brand-dark);
+    }
+
+    button.secondary {
+      color: var(--brand-dark);
+      background: #eaf4fb;
+      border: 1px solid #b9d9ee;
+    }
+
+    button.secondary:hover {
+      background: #d8ecf8;
+    }
+
+    button.danger {
+      color: var(--red);
+      background: #fff0ed;
+      border: 1px solid #f3b8b1;
+    }
+
+    button.danger:hover {
+      background: #ffe2dd;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .summary-grid,
+      .pillars,
+      .snapshot-grid,
+      .calendar,
+      .database-panel,
+      .check-extra {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 16px 12px 36px;
+      }
+
+      .hero,
+      .content-section,
+      .sidebar {
+        padding: 18px;
+      }
+
+      .summary-grid,
+      .split,
+      .pillars,
+      .snapshot-grid,
+      .calendar,
+      .database-panel,
+      .check-extra {
+        grid-template-columns: 1fr;
+      }
+
+      .section-heading {
+        display: grid;
+      }
+
+      .tag {
+        justify-self: start;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      .hero,
+      .content-section,
+      .sidebar,
+      .metric {
+        box-shadow: none;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      button,
+      .print-actions,
+      .calendar-tools,
+      .database-actions,
+      .import-box {
+        display: none;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .content-section {
+        break-inside: avoid;
+      }
+
+      .month-calendar-wrap {
+        overflow: visible;
+      }
+
+      .month-calendar {
+        min-width: 0;
+        gap: 5px;
+      }
+
+      .tracker-table {
+        min-width: 960px;
+      }
+
+      .calendar-day {
+        min-height: 120px;
+        padding: 6px;
+      }
+
+      .calendar-day textarea {
+        min-height: 78px;
+        padding: 5px;
+        font-size: 11px;
+      }
+
+      .check-extra {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">HG Services Internal Launch Control</p>
+        <h1>June Launch Control: Marketing Foundation, Content Planning, and Execution</h1>
+        <p class="subtitle">
+          A working dashboard for managing HG's first-month marketing launch across channel setup, reinstatement positioning, content production, approvals, publishing, reporting, and Google Sheet backup.
+        </p>
+        <div class="cta-line" aria-label="Launch focus">
+          <span class="status">Foundation month</span>
+          <span class="status warning">Organic-first</span>
+          <span class="status red">No heavy ads yet</span>
+        </div>
+      </div>
+      <div class="header-meta" aria-label="Project details">
+        <div class="meta-row">
+          <span class="meta-label">Client</span>
+          <span class="meta-value">HG Services</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Phase</span>
+          <span class="meta-value">Month 1</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Channels</span>
+          <span class="meta-value">FB / IG / XHS / TikTok</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Goal</span>
+          <span class="meta-value">Trust + clarity + execution</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-grid" aria-label="Month 1 output targets">
+      <div class="metric">
+        <strong>12</strong>
+        <span>feed posts across 4 weeks</span>
+      </div>
+      <div class="metric">
+        <strong>4</strong>
+        <span>XiaoHongShu notes, repurposed from strongest content</span>
+      </div>
+      <div class="metric">
+        <strong>8-16</strong>
+        <span>Facebook / Instagram Stories</span>
+      </div>
+      <div class="metric">
+        <strong>20-30</strong>
+        <span>site assets organized for production</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div class="content-section" aria-labelledby="database">
+          <div class="section-heading">
+            <div>
+              <h2 id="database">Database And Progress Tracker</h2>
+              <p>Use this panel to save checklist answers, fixes, due dates, and June calendar planning in this browser. Export the database when you want a backup or need to move it to another device.</p>
+            </div>
+            <span class="tag">Local database</span>
+          </div>
+          <div class="database-panel">
+            <div class="database-card">
+              <h3>Save And Backup</h3>
+              <p>The data is stored locally in this browser. It is not sent online and does not sync automatically.</p>
+              <div class="database-actions">
+                <button type="button" data-save-database>Save database</button>
+                <button type="button" class="secondary" data-export-database>Export JSON</button>
+                <button type="button" class="danger" data-clear-database>Clear database</button>
+              </div>
+              <p class="database-status" data-database-status>Database ready.</p>
+            </div>
+            <div class="database-card">
+              <h3>Import Backup</h3>
+              <p>Paste a previously exported JSON backup, then import it to restore checklist and calendar planning.</p>
+              <textarea class="import-box" data-import-database aria-label="Paste database JSON backup"></textarea>
+              <div class="database-actions">
+                <button type="button" class="secondary" data-import-database-button>Import JSON</button>
+              </div>
+            </div>
+            <div class="database-card">
+              <h3>Google Sheet Sync</h3>
+              <p>Paste the deployed Apps Script web app URL here, then push or pull the tracker database.</p>
+              <div class="db-field">
+                <label for="apps-script-url">Apps Script Web App URL</label>
+                <input id="apps-script-url" type="url" data-apps-script-url placeholder="https://script.google.com/macros/s/.../exec">
+              </div>
+              <div class="database-actions">
+                <button type="button" data-save-sheet-url>Save URL</button>
+                <button type="button" class="secondary" data-push-google-sheet>Push to Google Sheet</button>
+                <button type="button" class="secondary" data-pull-google-sheet>Pull from Google Sheet</button>
+              </div>
+              <p class="database-status" data-sheet-status>Google Sheet sync is not configured yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="snapshot">
+          <div class="section-heading">
+            <div>
+              <h2 id="snapshot">HG Client Snapshot</h2>
+              <p>Use this as the internal positioning reference when writing captions, choosing assets, and deciding what proof to request from the client.</p>
+            </div>
+            <span class="tag">Personalized</span>
+          </div>
+          <div class="snapshot-grid">
+            <div class="snapshot-card">
+              <strong>Company context</strong>
+              <span>HG is positioned as a contractor support company based in Puchong, serving mall management, retailers, tenants, main contractors, and property-related clients.</span>
+            </div>
+            <div class="snapshot-card">
+              <strong>Credibility angles</strong>
+              <span>Use concise proof points such as since 2015, 100+ malls, in-house teams, certified/compliant capability, and day/night standby operations where relevant.</span>
+            </div>
+            <div class="snapshot-card">
+              <strong>Month 1 lead message</strong>
+              <span>Lead with office and residential reinstatement, restoration, move-out handover, make-good works, and managed-property readiness.</span>
+            </div>
+            <div class="snapshot-card">
+              <strong>Supporting services</strong>
+              <span>Cross-reference rorobin, lorry, scaffold, hoarding, fit-out support, printing, signage, debris handling, and site coordination as capability proof.</span>
+            </div>
+          </div>
+          <div class="source-links" aria-label="HG website source links">
+            <a href="https://www.hggroup.com.my/" target="_blank" rel="noreferrer">HG homepage</a>
+            <a href="https://www.hggroup.com.my/about" target="_blank" rel="noreferrer">HG about</a>
+            <a href="https://www.hggroup.com.my/services" target="_blank" rel="noreferrer">HG services</a>
+            <a href="https://www.hggroup.com.my/reinstatementservices" target="_blank" rel="noreferrer">HG reinstatement</a>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="onboarding">
+          <div class="section-heading">
+            <div>
+              <h2 id="onboarding">1. Client Onboarding</h2>
+              <p>Lock the working setup before content production starts.</p>
+            </div>
+            <span class="tag">Week 0 / Start</span>
+          </div>
+          <ul class="checklist">
+            <li class="check-item">
+              <input type="checkbox" aria-label="Confirm main client contact and approval person">
+              <div class="check-copy">
+                <strong>Confirm main client contact and approval person.</strong>
+                <span>Decide who gives final sign-off for captions, visuals, posting dates, and profile changes.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Confirm approved retainer scope">
+              <div class="check-copy">
+                <strong>Confirm approved retainer scope.</strong>
+                <span>Facebook, Instagram, XiaoHongShu, TikTok, content planning, captions, creative direction, asset selection, and reporting.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Confirm Month 1 objective">
+              <div class="check-copy">
+                <strong>Confirm Month 1 objective.</strong>
+                <span>Foundation, profile clarity, trust-building, consistency, and baseline measurement.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Set weekly approval rhythm">
+              <div class="check-copy">
+                <strong>Set weekly approval rhythm.</strong>
+                <span>Planning, asset collection, content batching, client approval, publishing, and weekly performance checks.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="content-section" aria-labelledby="access">
+          <div class="section-heading">
+            <div>
+              <h2 id="access">2. Access And Channel Setup</h2>
+              <p>Make sure all active channels are usable before the first content batch.</p>
+            </div>
+            <span class="tag">Setup</span>
+          </div>
+          <div class="split">
+            <ul class="checklist">
+              <li class="check-item">
+                <input type="checkbox" aria-label="Get Facebook access">
+                <div class="check-copy">
+                  <strong>Get Facebook page access.</strong>
+                  <span>Request admin, editor, or Meta Business Suite access.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Get Instagram access">
+                <div class="check-copy">
+                  <strong>Get Instagram access for @hgservicesmy.</strong>
+                  <span>Confirm login, Meta link, profile edit access, and posting access.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Confirm XiaoHongShu and TikTok status">
+                <div class="check-copy">
+                  <strong>Confirm XiaoHongShu and TikTok account status.</strong>
+                  <span>If active, get access. If not active, prepare setup and profile positioning for each channel.</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="checklist">
+              <li class="check-item">
+                <input type="checkbox" aria-label="Check website link">
+                <div class="check-copy">
+                  <strong>Check website link.</strong>
+                  <span>Use the existing website as a trust and reference point where suitable.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Confirm WhatsApp path">
+                <div class="check-copy">
+                  <strong>Confirm WhatsApp/contact path.</strong>
+                  <span>Make the preferred enquiry route clear from active social channels.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Collect baseline access">
+                <div class="check-copy">
+                  <strong>Confirm access to basic insights.</strong>
+                  <span>Needed for reach, engagement, profile visits, WhatsApp clicks, DMs, and enquiry tracking.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="channel-matrix">
+          <div class="section-heading">
+            <div>
+              <h2 id="channel-matrix">Channel Setup Matrix</h2>
+              <p>Track channel-specific access, profile readiness, positioning, ownership, deadlines, and baseline notes before publishing starts.</p>
+            </div>
+            <span class="tag">FB / IG / XHS / TikTok</span>
+          </div>
+          <div class="tracker-table-wrap">
+            <table class="tracker-table" aria-label="Channel setup matrix">
+              <thead>
+                <tr>
+                  <th>Channel</th>
+                  <th>Access</th>
+                  <th>Profile Audit</th>
+                  <th>Positioning Notes</th>
+                  <th>Content Role</th>
+                  <th>Owner</th>
+                  <th>Deadline</th>
+                  <th>Baseline Metrics Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-channel-row="facebook">
+                  <td class="row-label">Facebook</td>
+                  <td><select data-channel-field="accessStatus"><option>Not started</option><option>Requested</option><option>Received</option><option>Blocked</option></select></td>
+                  <td><select data-channel-field="auditStatus"><option>Not started</option><option>In progress</option><option>Needs fix</option><option>Done</option></select></td>
+                  <td><textarea data-channel-field="positioningNotes">Use for slightly more explanation, service clarity, enquiry support, and project proof.</textarea></td>
+                  <td><textarea data-channel-field="contentRole">Education, before/after proof, project albums, enquiry CTA.</textarea></td>
+                  <td><input data-channel-field="owner" type="text"></td>
+                  <td><input data-channel-field="deadline" type="date"></td>
+                  <td><textarea data-channel-field="baselineNotes"></textarea></td>
+                </tr>
+                <tr data-channel-row="instagram">
+                  <td class="row-label">Instagram</td>
+                  <td><select data-channel-field="accessStatus"><option>Not started</option><option>Requested</option><option>Received</option><option>Blocked</option></select></td>
+                  <td><select data-channel-field="auditStatus"><option>Not started</option><option>In progress</option><option>Needs fix</option><option>Done</option></select></td>
+                  <td><textarea data-channel-field="positioningNotes">Use as the strongest visual proof channel for reels, carousels, stories, highlights, and pinned posts.</textarea></td>
+                  <td><textarea data-channel-field="contentRole">Site progress, team/equipment proof, before/after, Stories, profile trust.</textarea></td>
+                  <td><input data-channel-field="owner" type="text"></td>
+                  <td><input data-channel-field="deadline" type="date"></td>
+                  <td><textarea data-channel-field="baselineNotes"></textarea></td>
+                </tr>
+                <tr data-channel-row="xiaohongshu">
+                  <td class="row-label">XiaoHongShu</td>
+                  <td><select data-channel-field="accessStatus"><option>Not started</option><option>Requested</option><option>Received</option><option>Blocked</option></select></td>
+                  <td><select data-channel-field="auditStatus"><option>Not started</option><option>In progress</option><option>Needs fix</option><option>Done</option></select></td>
+                  <td><textarea data-channel-field="positioningNotes">Use for searchable property-owner education, checklist notes, handover tips, and practical reinstatement explainers.</textarea></td>
+                  <td><textarea data-channel-field="contentRole">One weekly note repurposed from strongest proof or education content.</textarea></td>
+                  <td><input data-channel-field="owner" type="text"></td>
+                  <td><input data-channel-field="deadline" type="date"></td>
+                  <td><textarea data-channel-field="baselineNotes"></textarea></td>
+                </tr>
+                <tr data-channel-row="tiktok">
+                  <td class="row-label">TikTok</td>
+                  <td><select data-channel-field="accessStatus"><option>Not started</option><option>Requested</option><option>Received</option><option>Blocked</option></select></td>
+                  <td><select data-channel-field="auditStatus"><option>Not started</option><option>In progress</option><option>Needs fix</option><option>Done</option></select></td>
+                  <td><textarea data-channel-field="positioningNotes">Use for setup/readiness and repurposed short-form site clips; not a separate Month 1 KPI unless confirmed later.</textarea></td>
+                  <td><textarea data-channel-field="contentRole">Short site proof, process snippets, before/after transitions, team/equipment clips.</textarea></td>
+                  <td><input data-channel-field="owner" type="text"></td>
+                  <td><input data-channel-field="deadline" type="date"></td>
+                  <td><textarea data-channel-field="baselineNotes"></textarea></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="positioning">
+          <div class="section-heading">
+            <div>
+              <h2 id="positioning">3. Positioning And Message Alignment</h2>
+              <p>Keep the message sharp: HG should be known for reliable reinstatement and restoration support.</p>
+            </div>
+            <span class="tag">Strategy</span>
+          </div>
+          <ul class="checklist">
+            <li class="check-item">
+              <input type="checkbox" aria-label="Lock positioning statement">
+              <div class="check-copy">
+                <strong>Lock the core positioning statement.</strong>
+                <span>Reliable contractor support team for office and residential reinstatement, restoration, handover, and site support works.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Confirm priority services">
+              <div class="check-copy">
+                <strong>Confirm priority Month 1 services.</strong>
+                <span>Office reinstatement, residential restoration, move-out handover, make-good works, rorobin, lorry, scaffold, debris handling, and site coordination.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Confirm target audiences">
+              <div class="check-copy">
+                <strong>Confirm target audiences.</strong>
+                <span>Office tenants, building managers, property managers, homeowners, landlords, agents, and tenants preparing for handover.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="content-section" aria-labelledby="audit">
+          <div class="section-heading">
+            <div>
+              <h2 id="audit">4. Channel Audit And Profile Optimization</h2>
+              <p>Make every channel easier to understand and easier to enquire from.</p>
+            </div>
+            <span class="tag">Foundation</span>
+          </div>
+          <div class="split">
+            <ul class="checklist">
+              <li class="check-item">
+                <input type="checkbox" aria-label="Audit Facebook">
+                <div class="check-copy">
+                  <strong>Audit Facebook.</strong>
+                  <span>Review service description, visuals, recent content, contact details, and enquiry path.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Audit Instagram">
+                <div class="check-copy">
+                  <strong>Audit Instagram.</strong>
+                  <span>Review bio, name field, highlights, pinned posts, contact button, and visual consistency.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Audit XiaoHongShu and TikTok">
+                <div class="check-copy">
+                  <strong>Audit XiaoHongShu and TikTok.</strong>
+                  <span>Review account setup, profile description, visuals, short-form content readiness, and search-friendly service wording.</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="checklist">
+              <li class="check-item">
+                <input type="checkbox" aria-label="Update bio language">
+                <div class="check-copy">
+                  <strong>Update bio language.</strong>
+                  <span>Emphasize office and residential reinstatement, restoration, handover, and contractor support.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Create highlight structure">
+                <div class="check-copy">
+                  <strong>Create or refine Instagram highlights.</strong>
+                  <span>Before/After, Office, Residential, Process, Safety, Rorobin, Scaffold, and Reviews.</span>
+                </div>
+              </li>
+              <li class="check-item">
+                <input type="checkbox" aria-label="Check contact visibility">
+                <div class="check-copy">
+                  <strong>Check contact visibility.</strong>
+                  <span>WhatsApp or preferred contact route should be obvious from every active channel.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="assets">
+          <div class="section-heading">
+            <div>
+              <h2 id="assets">5. Asset Collection And Sorting</h2>
+              <p>Turn real project work into a usable content library.</p>
+            </div>
+            <span class="tag">20-30 assets</span>
+          </div>
+          <ul class="checklist">
+            <li class="check-item">
+              <input type="checkbox" aria-label="Request site photos and videos">
+              <div class="check-copy">
+                <strong>Request 20 to 30 usable real project assets from HG.</strong>
+                <span>Prioritize clear photos and short clips that show real work, process, tools, teams, and results.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Sort assets by stage">
+              <div class="check-copy">
+                <strong>Sort assets by project stage.</strong>
+                <span>Before photos, work-in-progress photos, after photos, short site videos, team photos, and equipment photos.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Tag usable content angles">
+              <div class="check-copy">
+                <strong>Tag usable content angles.</strong>
+                <span>Before/after, checklists, project highlights, Stories, XiaoHongShu notes, and case study-style posts.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="content-section" aria-labelledby="framework">
+          <div class="section-heading">
+            <div>
+              <h2 id="framework">6. Content Pillars And Monthly Mix</h2>
+              <p>Use the approved split so the month balances education, proof, capability, and authority.</p>
+            </div>
+            <span class="tag">Approved mix</span>
+          </div>
+          <div class="pillars">
+            <div class="pillar">
+              <strong>Proof of Work: 20%</strong>
+              <span>Before/after posts, completed projects, site progress, and handover results.</span>
+            </div>
+            <div class="pillar">
+              <strong>Education: 45%</strong>
+              <span>Move-out checklists, building rules, floor protection, debris handling, and common mistakes.</span>
+            </div>
+            <div class="pillar">
+              <strong>Capability: 20%</strong>
+              <span>Team on site, lorries, rorobin, scaffold, tools, day/night operations, and coordination.</span>
+            </div>
+            <div class="pillar">
+              <strong>Authority: 15%</strong>
+              <span>Case studies, credentials, testimonials, project experience, and trust-building proof.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="calendar">
+          <div class="section-heading">
+            <div>
+              <h2 id="calendar">7. Four-Week Content Calendar</h2>
+              <p>Each week includes 3 feed posts, 1 XiaoHongShu note, and 2 to 4 Stories.</p>
+            </div>
+            <span class="tag">6-8 pieces / week</span>
+          </div>
+          <div class="calendar">
+            <div class="week">
+              <h3>Week 1</h3>
+              <ul>
+                <li>Before/after project post</li>
+                <li>Reinstatement checklist</li>
+                <li>Team or process post</li>
+                <li>XiaoHongShu checklist note</li>
+                <li>2-4 site or profile Stories</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h3>Week 2</h3>
+              <ul>
+                <li>Site progress reel</li>
+                <li>Common mistake explainer</li>
+                <li>Completed project post</li>
+                <li>XiaoHongShu mistake note</li>
+                <li>2-4 work-in-progress Stories</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h3>Week 3</h3>
+              <ul>
+                <li>Residential restoration proof</li>
+                <li>Building-management tip</li>
+                <li>Equipment or rorobin post</li>
+                <li>XiaoHongShu restoration note</li>
+                <li>2-4 team/equipment Stories</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h3>Week 4</h3>
+              <ul>
+                <li>Project highlight post</li>
+                <li>FAQ or preparation tip</li>
+                <li>Trust or authority post</li>
+                <li>XiaoHongShu project note</li>
+                <li>2-4 handover/result Stories</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="content-board">
+          <div class="section-heading">
+            <div>
+              <h2 id="content-board">Content Production Board</h2>
+              <p>Use this board to convert the weekly rhythm into actual topics, assets, captions, design work, approval status, publish dates, and follow-up notes.</p>
+            </div>
+            <span class="tag">Month 1 production</span>
+          </div>
+          <div class="tracker-table-wrap">
+            <table class="tracker-table" aria-label="Month 1 content production board">
+              <thead>
+                <tr>
+                  <th>Week</th>
+                  <th>Pillar</th>
+                  <th>Platform</th>
+                  <th>Topic</th>
+                  <th>Asset Needed</th>
+                  <th>Caption</th>
+                  <th>Design</th>
+                  <th>Approval</th>
+                  <th>Publish Date</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-content-row="content-01">
+                  <td><input data-content-field="week" type="text" value="Week 1"></td>
+                  <td><select data-content-field="pillar"><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Before/after reinstatement or restoration project proof</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Before, work-in-progress, and after photos</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-02">
+                  <td><input data-content-field="week" type="text" value="Week 1"></td>
+                  <td><select data-content-field="pillar"><option>Education &amp; Compliance</option><option>Proof of Work</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Office move-out reinstatement checklist</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Checklist template, simple project visuals</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-03">
+                  <td><input data-content-field="week" type="text" value="Week 1"></td>
+                  <td><select data-content-field="pillar"><option>Reliability &amp; Capability</option><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Instagram / TikTok"></td>
+                  <td><textarea data-content-field="topic">Team, rorobin, lorry, scaffold, or process proof</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Short site clips and team/equipment photos</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-04">
+                  <td><input data-content-field="week" type="text" value="Week 1"></td>
+                  <td><select data-content-field="pillar"><option>Education &amp; Compliance</option><option>Proof of Work</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="XiaoHongShu"></td>
+                  <td><textarea data-content-field="topic">Checklist note repurposed from strongest Week 1 education content</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Cover image plus 3-5 supporting visuals</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-05">
+                  <td><input data-content-field="week" type="text" value="Week 2"></td>
+                  <td><select data-content-field="pillar"><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Instagram / TikTok"></td>
+                  <td><textarea data-content-field="topic">Site progress reel: dismantling, hacking, debris handling, or protection</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Short vertical clips from active worksite</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-06">
+                  <td><input data-content-field="week" type="text" value="Week 2"></td>
+                  <td><select data-content-field="pillar"><option>Education &amp; Compliance</option><option>Proof of Work</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Common reinstatement or handover mistake explainer</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Simple visual explainer and relevant site image</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-07">
+                  <td><input data-content-field="week" type="text" value="Week 2"></td>
+                  <td><select data-content-field="pillar"><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Completed office or residential project post</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Completed project photos and scope notes</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-08">
+                  <td><input data-content-field="week" type="text" value="Week 2"></td>
+                  <td><select data-content-field="pillar"><option>Education &amp; Compliance</option><option>Proof of Work</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="XiaoHongShu"></td>
+                  <td><textarea data-content-field="topic">Common mistakes before property handover</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Cover image, checklist graphic, relevant proof photos</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-09">
+                  <td><input data-content-field="week" type="text" value="Week 3"></td>
+                  <td><select data-content-field="pillar"><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Residential restoration proof</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Residential before/after and scope notes</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-10">
+                  <td><input data-content-field="week" type="text" value="Week 3"></td>
+                  <td><select data-content-field="pillar"><option>Education &amp; Compliance</option><option>Proof of Work</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Building-management tip for reinstatement or handover</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Visual tip card and site protection image</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-11">
+                  <td><input data-content-field="week" type="text" value="Week 3"></td>
+                  <td><select data-content-field="pillar"><option>Reliability &amp; Capability</option><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Instagram / TikTok"></td>
+                  <td><textarea data-content-field="topic">Equipment, rorobin, lorry, scaffold, or site coordination proof</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Equipment and operations photos/clips</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-12">
+                  <td><input data-content-field="week" type="text" value="Week 3"></td>
+                  <td><select data-content-field="pillar"><option>Education &amp; Compliance</option><option>Proof of Work</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="XiaoHongShu"></td>
+                  <td><textarea data-content-field="topic">Residential restoration or handover guide</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Cover image plus simple guide visuals</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-13">
+                  <td><input data-content-field="week" type="text" value="Week 4"></td>
+                  <td><select data-content-field="pillar"><option>Trust &amp; Authority</option><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Reliability &amp; Capability</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Project highlight or mini case study</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Project scope, problem, process, result, proof photos</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-14">
+                  <td><input data-content-field="week" type="text" value="Week 4"></td>
+                  <td><select data-content-field="pillar"><option>Education &amp; Compliance</option><option>Proof of Work</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">FAQ or preparation tip before requesting quotation</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">FAQ template and supporting service visuals</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-15">
+                  <td><input data-content-field="week" type="text" value="Week 4"></td>
+                  <td><select data-content-field="pillar"><option>Trust &amp; Authority</option><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Reliability &amp; Capability</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="Facebook / Instagram"></td>
+                  <td><textarea data-content-field="topic">Trust or authority proof: experience, credentials, project ecosystem</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Company proof, team proof, project proof, website service references</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+                <tr data-content-row="content-16">
+                  <td><input data-content-field="week" type="text" value="Week 4"></td>
+                  <td><select data-content-field="pillar"><option>Proof of Work</option><option>Education &amp; Compliance</option><option>Reliability &amp; Capability</option><option>Trust &amp; Authority</option></select></td>
+                  <td><input data-content-field="platform" type="text" value="XiaoHongShu"></td>
+                  <td><textarea data-content-field="topic">Project note or before/after case proof</textarea></td>
+                  <td><textarea data-content-field="assetNeeded">Cover image, project sequence, short educational title</textarea></td>
+                  <td><select data-content-field="captionStatus"><option>Not started</option><option>Drafting</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="designStatus"><option>Not started</option><option>In progress</option><option>Ready</option><option>Approved</option><option>Needs revision</option></select></td>
+                  <td><select data-content-field="approvalStatus"><option>Not sent</option><option>Sent</option><option>Approved</option><option>Needs revision</option><option>Published</option></select></td>
+                  <td><input data-content-field="publishDate" type="date"></td>
+                  <td><textarea data-content-field="notes"></textarea></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="june-calendar">
+          <div class="section-heading">
+            <div>
+              <h2 id="june-calendar">8. June 2026 Editable Calendar</h2>
+              <p>Add internal deadlines, client approval dates, posting dates, asset reminders, and weekly notes directly into each day.</p>
+            </div>
+            <span class="tag">Editable planner</span>
+          </div>
+          <div class="calendar-tools">
+            <button type="button" data-save-calendar>Save calendar notes</button>
+            <button type="button" class="secondary" data-clear-calendar>Clear saved notes</button>
+            <span class="calendar-save-status" data-calendar-status>Notes autosave in this browser when supported.</span>
+          </div>
+          <div class="month-calendar-wrap">
+            <div class="month-calendar" aria-label="June 2026 editable calendar">
+              <div class="calendar-weekday">Mon</div>
+              <div class="calendar-weekday">Tue</div>
+              <div class="calendar-weekday">Wed</div>
+              <div class="calendar-weekday">Thu</div>
+              <div class="calendar-weekday">Fri</div>
+              <div class="calendar-weekday">Sat</div>
+              <div class="calendar-weekday">Sun</div>
+
+              <div class="calendar-day">
+                <div class="day-number">1 <span>Week 1</span></div>
+                <textarea data-calendar-note="2026-06-01" aria-label="June 1 notes">Client kickoff / onboarding</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">2</div>
+                <textarea data-calendar-note="2026-06-02" aria-label="June 2 notes">Access + channel setup</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">3</div>
+                <textarea data-calendar-note="2026-06-03" aria-label="June 3 notes">Profile audit + contact path check</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">4</div>
+                <textarea data-calendar-note="2026-06-04" aria-label="June 4 notes">Collect site photos/videos</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">5</div>
+                <textarea data-calendar-note="2026-06-05" aria-label="June 5 notes">Week 1 content approval</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">6</div>
+                <textarea data-calendar-note="2026-06-06" aria-label="June 6 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">7</div>
+                <textarea data-calendar-note="2026-06-07" aria-label="June 7 notes"></textarea>
+              </div>
+
+              <div class="calendar-day">
+                <div class="day-number">8 <span>Week 2</span></div>
+                <textarea data-calendar-note="2026-06-08" aria-label="June 8 notes">Publish / schedule Week 1 posts</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">9</div>
+                <textarea data-calendar-note="2026-06-09" aria-label="June 9 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">10</div>
+                <textarea data-calendar-note="2026-06-10" aria-label="June 10 notes">Prepare Week 2 content batch</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">11</div>
+                <textarea data-calendar-note="2026-06-11" aria-label="June 11 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">12</div>
+                <textarea data-calendar-note="2026-06-12" aria-label="June 12 notes">Week 2 content approval</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">13</div>
+                <textarea data-calendar-note="2026-06-13" aria-label="June 13 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">14</div>
+                <textarea data-calendar-note="2026-06-14" aria-label="June 14 notes"></textarea>
+              </div>
+
+              <div class="calendar-day">
+                <div class="day-number">15 <span>Week 3</span></div>
+                <textarea data-calendar-note="2026-06-15" aria-label="June 15 notes">Publish / schedule Week 2 posts</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">16</div>
+                <textarea data-calendar-note="2026-06-16" aria-label="June 16 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">17</div>
+                <textarea data-calendar-note="2026-06-17" aria-label="June 17 notes">Prepare Week 3 content batch</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">18</div>
+                <textarea data-calendar-note="2026-06-18" aria-label="June 18 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">19</div>
+                <textarea data-calendar-note="2026-06-19" aria-label="June 19 notes">Week 3 content approval</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">20</div>
+                <textarea data-calendar-note="2026-06-20" aria-label="June 20 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">21</div>
+                <textarea data-calendar-note="2026-06-21" aria-label="June 21 notes"></textarea>
+              </div>
+
+              <div class="calendar-day">
+                <div class="day-number">22 <span>Week 4</span></div>
+                <textarea data-calendar-note="2026-06-22" aria-label="June 22 notes">Publish / schedule Week 3 posts</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">23</div>
+                <textarea data-calendar-note="2026-06-23" aria-label="June 23 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">24</div>
+                <textarea data-calendar-note="2026-06-24" aria-label="June 24 notes">Prepare Week 4 content batch</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">25</div>
+                <textarea data-calendar-note="2026-06-25" aria-label="June 25 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">26</div>
+                <textarea data-calendar-note="2026-06-26" aria-label="June 26 notes">Week 4 content approval</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">27</div>
+                <textarea data-calendar-note="2026-06-27" aria-label="June 27 notes"></textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">28</div>
+                <textarea data-calendar-note="2026-06-28" aria-label="June 28 notes"></textarea>
+              </div>
+
+              <div class="calendar-day">
+                <div class="day-number">29 <span>Report</span></div>
+                <textarea data-calendar-note="2026-06-29" aria-label="June 29 notes">Compile Month 1 baseline report</textarea>
+              </div>
+              <div class="calendar-day">
+                <div class="day-number">30</div>
+                <textarea data-calendar-note="2026-06-30" aria-label="June 30 notes">Review Month 1 + recommend Month 2</textarea>
+              </div>
+              <div class="calendar-day empty" aria-hidden="true"></div>
+              <div class="calendar-day empty" aria-hidden="true"></div>
+              <div class="calendar-day empty" aria-hidden="true"></div>
+              <div class="calendar-day empty" aria-hidden="true"></div>
+              <div class="calendar-day empty" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section" aria-labelledby="production">
+          <div class="section-heading">
+            <div>
+              <h2 id="production">9. Production, Approval, And Publishing</h2>
+              <p>Keep production weekly so approvals stay manageable.</p>
+            </div>
+            <span class="tag">Execution</span>
+          </div>
+          <ul class="checklist">
+            <li class="check-item">
+              <input type="checkbox" aria-label="Draft captions">
+              <div class="check-copy">
+                <strong>Draft captions for Facebook, Instagram, and XiaoHongShu.</strong>
+                <span>Facebook can carry slightly more explanation; Instagram should stay visual and practical; XiaoHongShu should be more searchable.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Prepare templates">
+              <div class="check-copy">
+                <strong>Prepare simple visual templates.</strong>
+                <span>Before/after posts, checklist posts, project highlights, and case study-style posts.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Submit weekly content batch">
+              <div class="check-copy">
+                <strong>Submit weekly content batch for approval.</strong>
+                <span>Include posting date, platform, visual, caption, call to action, and any notes needed from HG.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Publish and monitor">
+              <div class="check-copy">
+                <strong>Publish and monitor content.</strong>
+                <span>Track comments, DMs, WhatsApp clicks, enquiry quality, saves, shares, and useful client feedback.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="content-section" aria-labelledby="reporting">
+          <div class="section-heading">
+            <div>
+              <h2 id="reporting">10. Month 1 Reporting And Next Step</h2>
+              <p>Close the month with a baseline and clear Month 2 recommendation.</p>
+            </div>
+            <span class="tag">Baseline report</span>
+          </div>
+          <ul class="checklist">
+            <li class="check-item">
+              <input type="checkbox" aria-label="Create baseline report">
+              <div class="check-copy">
+                <strong>Create the Month 1 baseline report.</strong>
+                <span>Include content output, reach, engagement, saves, shares, profile visits, WhatsApp clicks, DMs, enquiries, and enquiry quality.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Identify best performing content">
+              <div class="check-copy">
+                <strong>Identify early content winners.</strong>
+                <span>Look for the strongest pillars, formats, topics, and calls to action based on actual performance.</span>
+              </div>
+            </li>
+            <li class="check-item">
+              <input type="checkbox" aria-label="Recommend Month 2 direction">
+              <div class="check-copy">
+                <strong>Recommend Month 2 direction.</strong>
+                <span>Move toward mini case studies, recurring content series, stronger reels, and light boosting only if organic winners are clear.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sidebar" aria-label="Quick reference">
+        <div class="side-block">
+          <h2>Weekly Output</h2>
+          <ul class="compact-list">
+            <li><span>Feed posts</span><strong>3</strong></li>
+            <li><span>Stories</span><strong>2-4</strong></li>
+            <li><span>XiaoHongShu notes</span><strong>1</strong></li>
+            <li><span>Total content pieces</span><strong>6-8</strong></li>
+          </ul>
+        </div>
+
+        <div class="side-block">
+          <h2>Month 1 KPIs</h2>
+          <ul class="compact-list">
+            <li><span>Feed posts</span><strong>12</strong></li>
+            <li><span>XHS notes</span><strong>4</strong></li>
+            <li><span>Stories</span><strong>8-16</strong></li>
+            <li><span>TikTok</span><strong>Setup ready</strong></li>
+            <li><span>Assets organized</span><strong>20-30</strong></li>
+            <li><span>Report</span><strong>1 baseline</strong></li>
+          </ul>
+        </div>
+
+        <div class="side-block">
+          <h2>Positioning</h2>
+          <p class="note">
+            HG Services is a reliable contractor support team for office and residential reinstatement, restoration, handover, and site support works.
+          </p>
+        </div>
+
+        <div class="side-block">
+          <h2>Primary Focus</h2>
+          <ul class="compact-list">
+            <li><span>Office reinstatement</span><strong>Lead</strong></li>
+            <li><span>Residential restoration</span><strong>Lead</strong></li>
+            <li><span>Move-out handover</span><strong>Lead</strong></li>
+            <li><span>Rorobin / lorry / scaffold</span><strong>Support</strong></li>
+          </ul>
+        </div>
+
+        <div class="print-actions">
+          <button type="button" onclick="window.print()">Print checklist</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var databaseKey = "hg-services-marketing-launch-database-v1";
+      var legacyCalendarPrefix = "hg-services-june-2026-";
+      var calendarFields = Array.prototype.slice.call(document.querySelectorAll("[data-calendar-note]"));
+      var checklistItems = Array.prototype.slice.call(document.querySelectorAll(".check-item"));
+      var channelRows = Array.prototype.slice.call(document.querySelectorAll("[data-channel-row]"));
+      var contentRows = Array.prototype.slice.call(document.querySelectorAll("[data-content-row]"));
+      var calendarStatus = document.querySelector("[data-calendar-status]");
+      var databaseStatus = document.querySelector("[data-database-status]");
+      var saveDatabaseButton = document.querySelector("[data-save-database]");
+      var exportDatabaseButton = document.querySelector("[data-export-database]");
+      var clearDatabaseButton = document.querySelector("[data-clear-database]");
+      var importDatabaseBox = document.querySelector("[data-import-database]");
+      var importDatabaseButton = document.querySelector("[data-import-database-button]");
+      var saveCalendarButton = document.querySelector("[data-save-calendar]");
+      var clearCalendarButton = document.querySelector("[data-clear-calendar]");
+      var appsScriptUrlField = document.querySelector("[data-apps-script-url]");
+      var saveSheetUrlButton = document.querySelector("[data-save-sheet-url]");
+      var pushGoogleSheetButton = document.querySelector("[data-push-google-sheet]");
+      var pullGoogleSheetButton = document.querySelector("[data-pull-google-sheet]");
+      var sheetStatus = document.querySelector("[data-sheet-status]");
+      var database = loadDatabase();
+
+      function emptyDatabase() {
+        return {
+          version: 1,
+          updatedAt: "",
+          checklists: {},
+          calendar: {},
+          channels: {},
+          contentPlan: {},
+          settings: {}
+        };
+      }
+
+      function normalizeDatabase(value) {
+        var normalized = value && typeof value === "object" ? value : emptyDatabase();
+        normalized.version = 1;
+        normalized.updatedAt = normalized.updatedAt || "";
+        normalized.checklists = normalized.checklists && typeof normalized.checklists === "object" ? normalized.checklists : {};
+        normalized.calendar = normalized.calendar && typeof normalized.calendar === "object" ? normalized.calendar : {};
+        normalized.channels = normalized.channels && typeof normalized.channels === "object" ? normalized.channels : {};
+        normalized.contentPlan = normalized.contentPlan && typeof normalized.contentPlan === "object" ? normalized.contentPlan : {};
+        normalized.settings = normalized.settings && typeof normalized.settings === "object" ? normalized.settings : {};
+        return normalized;
+      }
+
+      function loadDatabase() {
+        try {
+          var saved = window.localStorage.getItem(databaseKey);
+          if (saved) {
+            return normalizeDatabase(JSON.parse(saved));
+          }
+        } catch (error) {
+          setStatus("Database could not be loaded. The page is still editable.");
+        }
+        return emptyDatabase();
+      }
+
+      function setStatus(message) {
+        if (databaseStatus) {
+          databaseStatus.textContent = message;
+        }
+        if (calendarStatus) {
+          calendarStatus.textContent = message;
+        }
+      }
+
+      function setSheetStatus(message) {
+        if (sheetStatus) {
+          sheetStatus.textContent = message;
+        }
+      }
+
+      function saveDatabase(message) {
+        try {
+          database.updatedAt = new Date().toISOString();
+          window.localStorage.setItem(databaseKey, JSON.stringify(database));
+          setStatus(message || "Database saved.");
+        } catch (error) {
+          setStatus("Database could not be saved. Export JSON after editing if possible.");
+        }
+      }
+
+      function createField(fieldType, labelText, value, options) {
+        var wrapper = document.createElement("div");
+        var label = document.createElement("label");
+        var field;
+        wrapper.className = "db-field";
+        label.textContent = labelText;
+
+        if (fieldType === "select") {
+          field = document.createElement("select");
+          options.forEach(function (optionText) {
+            var option = document.createElement("option");
+            option.value = optionText;
+            option.textContent = optionText;
+            field.appendChild(option);
+          });
+        } else if (fieldType === "date") {
+          field = document.createElement("input");
+          field.type = "date";
+        } else {
+          field = document.createElement("textarea");
+        }
+
+        field.value = value || "";
+        wrapper.appendChild(label);
+        wrapper.appendChild(field);
+        return {
+          wrapper: wrapper,
+          field: field
+        };
+      }
+
+      function findSectionTitle(item) {
+        var section = item.closest(".content-section");
+        var heading = section ? section.querySelector("h2") : null;
+        return heading ? heading.textContent.trim() : "";
+      }
+
+      function saveAppsScriptUrl(message) {
+        if (!appsScriptUrlField) {
+          return "";
+        }
+        database.settings.appsScriptUrl = appsScriptUrlField.value.trim();
+        saveDatabase(message || "Google Sheet URL saved.");
+        return database.settings.appsScriptUrl;
+      }
+
+      function getAppsScriptUrl() {
+        return ((appsScriptUrlField && appsScriptUrlField.value) || database.settings.appsScriptUrl || "").trim();
+      }
+
+      function fieldsForRow(row, selector) {
+        return Array.prototype.slice.call(row.querySelectorAll(selector));
+      }
+
+      function readRowFields(row, selector) {
+        var values = {};
+        fieldsForRow(row, selector).forEach(function (field) {
+          var key = field.dataset.channelField || field.dataset.contentField;
+          if (key) {
+            values[key] = field.value || "";
+          }
+        });
+        return values;
+      }
+
+      function writeRowFields(row, selector, record) {
+        fieldsForRow(row, selector).forEach(function (field) {
+          var key = field.dataset.channelField || field.dataset.contentField;
+          if (key && Object.prototype.hasOwnProperty.call(record, key)) {
+            field.value = record[key] || "";
+          }
+        });
+      }
+
+      function setupChannelDatabase() {
+        channelRows.forEach(function (row) {
+          var id = row.dataset.channelRow;
+          var defaults = readRowFields(row, "[data-channel-field]");
+          var record = Object.assign({ channel: row.querySelector(".row-label") ? row.querySelector(".row-label").textContent.trim() : id }, defaults, database.channels[id] || {});
+          database.channels[id] = record;
+          writeRowFields(row, "[data-channel-field]", record);
+
+          fieldsForRow(row, "[data-channel-field]").forEach(function (field) {
+            field.addEventListener("input", function () {
+              var key = field.dataset.channelField;
+              database.channels[id][key] = field.value;
+              saveDatabase("Channel setup saved.");
+            });
+            field.addEventListener("change", function () {
+              var key = field.dataset.channelField;
+              database.channels[id][key] = field.value;
+              saveDatabase("Channel setup saved.");
+            });
+          });
+        });
+      }
+
+      function setupContentPlanDatabase() {
+        contentRows.forEach(function (row) {
+          var id = row.dataset.contentRow;
+          var defaults = readRowFields(row, "[data-content-field]");
+          var record = Object.assign({ id: id }, defaults, database.contentPlan[id] || {});
+          database.contentPlan[id] = record;
+          writeRowFields(row, "[data-content-field]", record);
+
+          fieldsForRow(row, "[data-content-field]").forEach(function (field) {
+            field.addEventListener("input", function () {
+              var key = field.dataset.contentField;
+              database.contentPlan[id][key] = field.value;
+              saveDatabase("Content plan saved.");
+            });
+            field.addEventListener("change", function () {
+              var key = field.dataset.contentField;
+              database.contentPlan[id][key] = field.value;
+              saveDatabase("Content plan saved.");
+            });
+          });
+        });
+      }
+
+      function setupChecklistDatabase() {
+        checklistItems.forEach(function (item, index) {
+          var id = item.dataset.checklistId || "checklist-" + String(index + 1).padStart(2, "0");
+          var checkbox = item.querySelector("input[type='checkbox']");
+          var title = item.querySelector(".check-copy strong");
+          var sectionTitle = findSectionTitle(item);
+          var record = database.checklists[id] || {};
+          var statusField = createField("select", "Status", record.status || "Not started", [
+            "Not started",
+            "In progress",
+            "Waiting client",
+            "Needs fix",
+            "Done"
+          ]);
+          var dueField = createField("date", "Deadline", record.deadline || "");
+          var answerField = createField("textarea", "Answer / current state", record.answer || "");
+          var fixField = createField("textarea", "Fix / next action", record.fix || "");
+          var extra = document.createElement("div");
+
+          item.dataset.checklistId = id;
+          extra.className = "check-extra";
+          extra.appendChild(statusField.wrapper);
+          extra.appendChild(dueField.wrapper);
+          extra.appendChild(answerField.wrapper);
+          extra.appendChild(fixField.wrapper);
+          item.appendChild(extra);
+
+          database.checklists[id] = {
+            section: record.section || sectionTitle,
+            title: title ? title.textContent.trim() : "Checklist item " + (index + 1),
+            done: Boolean(record.done),
+            status: record.status || "Not started",
+            deadline: record.deadline || "",
+            answer: record.answer || "",
+            fix: record.fix || ""
+          };
+
+          if (checkbox) {
+            checkbox.checked = Boolean(database.checklists[id].done);
+            checkbox.addEventListener("change", function () {
+              database.checklists[id].done = checkbox.checked;
+              if (checkbox.checked) {
+                database.checklists[id].status = "Done";
+                statusField.field.value = "Done";
+              } else if (statusField.field.value === "Done") {
+                database.checklists[id].status = "Not started";
+                statusField.field.value = "Not started";
+              }
+              saveDatabase("Checklist saved.");
+            });
+          }
+
+          statusField.field.addEventListener("change", function () {
+            database.checklists[id].status = statusField.field.value;
+            database.checklists[id].done = statusField.field.value === "Done";
+            if (checkbox) {
+              checkbox.checked = database.checklists[id].done;
+            }
+            saveDatabase("Checklist saved.");
+          });
+
+          dueField.field.addEventListener("input", function () {
+            database.checklists[id].deadline = dueField.field.value;
+            saveDatabase("Deadline saved.");
+          });
+
+          answerField.field.addEventListener("input", function () {
+            database.checklists[id].answer = answerField.field.value;
+            saveDatabase("Answer saved.");
+          });
+
+          fixField.field.addEventListener("input", function () {
+            database.checklists[id].fix = fixField.field.value;
+            saveDatabase("Fix action saved.");
+          });
+        });
+      }
+
+      function setupCalendarDatabase() {
+        calendarFields.forEach(function (field) {
+          var date = field.dataset.calendarNote;
+          var defaultValue = field.value;
+
+          if (!Object.prototype.hasOwnProperty.call(database.calendar, date)) {
+            try {
+              var legacyValue = window.localStorage.getItem(legacyCalendarPrefix + date);
+              database.calendar[date] = legacyValue !== null ? legacyValue : defaultValue;
+            } catch (error) {
+              database.calendar[date] = defaultValue;
+            }
+          }
+
+          field.value = database.calendar[date];
+          field.addEventListener("input", function () {
+            database.calendar[date] = field.value;
+            saveDatabase("Calendar saved.");
+          });
+        });
+      }
+
+      function applyImportedDatabase(nextDatabase) {
+        database = normalizeDatabase(nextDatabase);
+
+        checklistItems.forEach(function (item) {
+          var id = item.dataset.checklistId;
+          var record = database.checklists[id] || {};
+          var title = item.querySelector(".check-copy strong");
+          var sectionTitle = findSectionTitle(item);
+          var checkbox = item.querySelector("input[type='checkbox']");
+          var fields = item.querySelectorAll(".check-extra select, .check-extra input, .check-extra textarea");
+
+          database.checklists[id] = {
+            section: record.section || sectionTitle,
+            title: record.title || (title ? title.textContent.trim() : id),
+            done: Boolean(record.done),
+            status: record.status || "Not started",
+            deadline: record.deadline || "",
+            answer: record.answer || "",
+            fix: record.fix || ""
+          };
+          record = database.checklists[id];
+
+          if (checkbox) {
+            checkbox.checked = record.done;
+          }
+          if (fields[0]) {
+            fields[0].value = record.status;
+          }
+          if (fields[1]) {
+            fields[1].value = record.deadline;
+          }
+          if (fields[2]) {
+            fields[2].value = record.answer;
+          }
+          if (fields[3]) {
+            fields[3].value = record.fix;
+          }
+        });
+
+        calendarFields.forEach(function (field) {
+          var date = field.dataset.calendarNote;
+          database.calendar[date] = Object.prototype.hasOwnProperty.call(database.calendar, date) ? database.calendar[date] : field.defaultValue;
+          field.value = database.calendar[date];
+        });
+
+        channelRows.forEach(function (row) {
+          var id = row.dataset.channelRow;
+          var defaults = readRowFields(row, "[data-channel-field]");
+          database.channels[id] = Object.assign({ channel: row.querySelector(".row-label") ? row.querySelector(".row-label").textContent.trim() : id }, defaults, database.channels[id] || {});
+          writeRowFields(row, "[data-channel-field]", database.channels[id]);
+        });
+
+        contentRows.forEach(function (row) {
+          var id = row.dataset.contentRow;
+          var defaults = readRowFields(row, "[data-content-field]");
+          database.contentPlan[id] = Object.assign({ id: id }, defaults, database.contentPlan[id] || {});
+          writeRowFields(row, "[data-content-field]", database.contentPlan[id]);
+        });
+
+        if (appsScriptUrlField) {
+          appsScriptUrlField.value = database.settings.appsScriptUrl || "";
+        }
+
+        saveDatabase("Database imported.");
+      }
+
+      function pushToGoogleSheet() {
+        var url = saveAppsScriptUrl("Google Sheet URL saved.");
+        if (!url) {
+          setSheetStatus("Paste the Apps Script web app URL first.");
+          return;
+        }
+
+        saveDatabase("Preparing Google Sheet sync.");
+        setSheetStatus("Sending tracker database to Google Sheet...");
+
+        var payload = {
+          source: "HG Services HTML tracker",
+          database: database
+        };
+
+        fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          redirect: "follow"
+        }).then(function () {
+          setSheetStatus("Pushed to Google Sheet.");
+        }).catch(function () {
+          fetch(url, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(payload)
+          }).then(function () {
+            setSheetStatus("Sent to Google Sheet. Browser security may block confirmation, so check the Sheet.");
+          }).catch(function () {
+            setSheetStatus("Google Sheet push failed. Check the Apps Script URL and deployment access.");
+          });
+        });
+      }
+
+      function pullFromGoogleSheet() {
+        var url = saveAppsScriptUrl("Google Sheet URL saved.");
+        var callbackName = "hgSheetImport" + Date.now();
+        var script = document.createElement("script");
+
+        if (!url) {
+          setSheetStatus("Paste the Apps Script web app URL first.");
+          return;
+        }
+
+        setSheetStatus("Pulling tracker database from Google Sheet...");
+
+        window[callbackName] = function (response) {
+          delete window[callbackName];
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+
+          if (response && response.ok && response.database) {
+            applyImportedDatabase(response.database);
+            setSheetStatus("Pulled latest data from Google Sheet.");
+          } else {
+            setSheetStatus("Google Sheet response did not include tracker data.");
+          }
+        };
+
+        script.onerror = function () {
+          delete window[callbackName];
+          setSheetStatus("Google Sheet pull failed. Check the Apps Script URL and deployment access.");
+        };
+        script.src = url + (url.indexOf("?") === -1 ? "?" : "&") + "action=read&callback=" + encodeURIComponent(callbackName);
+        document.body.appendChild(script);
+      }
+
+      function exportDatabase() {
+        saveDatabase("Database saved for export.");
+        var json = JSON.stringify(database, null, 2);
+        var blob = new Blob([json], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "hg-services-marketing-launch-database.json";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function clearDatabase() {
+        if (!window.confirm("Clear saved checklist answers, fixes, deadlines, and calendar notes from this browser?")) {
+          return;
+        }
+
+        try {
+          window.localStorage.removeItem(databaseKey);
+        } catch (error) {
+          setStatus("Database could not be cleared.");
+          return;
+        }
+
+        applyImportedDatabase(emptyDatabase());
+        setStatus("Database cleared.");
+      }
+
+      function clearCalendar() {
+        if (!window.confirm("Clear all June calendar notes?")) {
+          return;
+        }
+
+        calendarFields.forEach(function (field) {
+          var date = field.dataset.calendarNote;
+          field.value = "";
+          database.calendar[date] = "";
+        });
+        saveDatabase("Calendar cleared.");
+      }
+
+      setupChecklistDatabase();
+      setupCalendarDatabase();
+      setupChannelDatabase();
+      setupContentPlanDatabase();
+      if (appsScriptUrlField) {
+        appsScriptUrlField.value = database.settings.appsScriptUrl || "";
+        appsScriptUrlField.addEventListener("input", function () {
+          database.settings.appsScriptUrl = appsScriptUrlField.value.trim();
+          saveDatabase("Google Sheet URL saved.");
+        });
+      }
+      saveDatabase("Database ready.");
+
+      if (saveDatabaseButton) {
+        saveDatabaseButton.addEventListener("click", function () {
+          saveDatabase("Database saved.");
+        });
+      }
+
+      if (exportDatabaseButton) {
+        exportDatabaseButton.addEventListener("click", exportDatabase);
+      }
+
+      if (clearDatabaseButton) {
+        clearDatabaseButton.addEventListener("click", clearDatabase);
+      }
+
+      if (importDatabaseButton) {
+        importDatabaseButton.addEventListener("click", function () {
+          try {
+            applyImportedDatabase(JSON.parse(importDatabaseBox.value));
+            importDatabaseBox.value = "";
+          } catch (error) {
+            setStatus("Import failed. Paste a valid exported JSON backup.");
+          }
+        });
+      }
+
+      if (saveCalendarButton) {
+        saveCalendarButton.addEventListener("click", function () {
+          saveDatabase("Calendar saved.");
+        });
+      }
+
+      if (clearCalendarButton) {
+        clearCalendarButton.addEventListener("click", clearCalendar);
+      }
+
+      if (saveSheetUrlButton) {
+        saveSheetUrlButton.addEventListener("click", function () {
+          saveAppsScriptUrl("Google Sheet URL saved.");
+          setSheetStatus("Google Sheet URL saved.");
+        });
+      }
+
+      if (pushGoogleSheetButton) {
+        pushGoogleSheetButton.addEventListener("click", pushToGoogleSheet);
+      }
+
+      if (pullGoogleSheetButton) {
+        pullGoogleSheetButton.addEventListener("click", pullFromGoogleSheet);
+      }
+    })();
+  </script>
+</body>
+</html>
