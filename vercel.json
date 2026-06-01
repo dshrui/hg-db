@@ -1,25 +1,67 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "api/admin.mjs": {
-      "includeFiles": "private/admin.html"
-    }
-  },
-  "redirects": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/private/:path*",
-      "destination": "/",
-      "permanent": false
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/admin",
-      "destination": "/api/admin"
+      "src": "index.html",
+      "use": "@vercel/static"
     },
     {
-      "source": "/login",
-      "destination": "/login.html"
+      "src": "login.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/admin.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/login.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/logout.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/sheet/*.mjs",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/private/.*",
+      "status": 302,
+      "headers": {
+        "Location": "/"
+      }
+    },
+    {
+      "src": "/admin",
+      "dest": "/api/admin.mjs"
+    },
+    {
+      "src": "/login",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/api/login",
+      "dest": "/api/login.mjs"
+    },
+    {
+      "src": "/api/logout",
+      "dest": "/api/logout.mjs"
+    },
+    {
+      "src": "/api/sheet/push",
+      "dest": "/api/sheet/push.mjs"
+    },
+    {
+      "src": "/api/sheet/pull",
+      "dest": "/api/sheet/pull.mjs"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
     }
   ]
 }

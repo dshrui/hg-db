@@ -1,3 +1,4 @@
+import { methodNotAllowed, sendWebResponse, toWebRequest } from "../../lib/vercel-adapter.mjs";
 import { isAuthenticated, jsonResponse, unauthorizedResponse } from "../../lib/vercel-auth.mjs";
 
 export async function GET(request) {
@@ -21,4 +22,10 @@ export async function GET(request) {
       "Cache-Control": "no-store",
     },
   });
+}
+
+export default async function handler(request, reply) {
+  const webRequest = toWebRequest(request);
+  const response = request.method === "GET" ? await GET(webRequest) : methodNotAllowed();
+  await sendWebResponse(response, reply);
 }
