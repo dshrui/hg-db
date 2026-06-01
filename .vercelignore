@@ -1,0 +1,11 @@
+*
+!api
+!api/**
+!lib
+!lib/**
+!private
+!private/admin.html
+!index.html
+!login.html
+!package.json
+!vercel.json

@@ -2,7 +2,7 @@
 
 Internal marketing launch tracker for HG Services' first-month marketing foundation work.
 
-The project now has two surfaces:
+The project now has two surfaces on one Vercel deployment:
 
 - Partner-safe frontend at `/`
 - Password-protected admin/backend at `/admin`
@@ -14,6 +14,10 @@ The project now has two surfaces:
 - `private/admin.html` - admin dashboard with database tools and Google Sheet sync buttons.
 - `login.html` - backend login screen.
 - `server.js` - password-protected backend and Google Sheet proxy.
+- `api/` - Vercel serverless backend routes for login, logout, admin, and Google Sheet sync.
+- `lib/vercel-auth.mjs` - signed cookie authentication helpers for Vercel.
+- `vercel.json` - Vercel routing for `/admin`, `/login`, and protected private paths.
+- `.vercelignore` - Vercel deployment allowlist so only needed frontend/backend files are uploaded.
 - `google-sheet-setup/google-apps-script.gs` - Google Apps Script web app endpoint for syncing the website database to Google Sheets.
 - `.env.example` - required backend environment variables.
 
@@ -28,17 +32,23 @@ The project now has two surfaces:
 
 ## Backend Setup
 
-Create environment variables based on `.env.example`:
+Create environment variables based on `.env.example`.
+
+For Vercel, add these in Project Settings > Environment Variables:
 
 ```bash
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=replace-with-a-strong-password
 SESSION_SECRET=replace-with-a-long-random-secret
 APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
-PORT=3000
 ```
 
-Run locally:
+Deploy the repo to Vercel from GitHub. The live Vercel site will then expose:
+
+- Partner view: `https://your-project.vercel.app/`
+- Admin view: `https://your-project.vercel.app/admin`
+
+For local Node testing without Vercel, you can still run:
 
 ```bash
 npm start
@@ -63,8 +73,8 @@ Then open:
 ## Notes
 
 - The partner frontend hides database and sync controls.
-- The admin page requires backend login.
+- The admin page requires backend login through Vercel functions or `server.js`.
 - No Google credentials or Apps Script URL are stored in the frontend HTML.
 - The Google Sheet acts as backup, reporting database, and recovery source.
 - GitHub Pages is configured to publish from `docs/` so backend files are not served by the live static site.
-- Use a Node-capable host for the protected backend.
+- Use Vercel as the main deployment when you want frontend and backend on one public URL.

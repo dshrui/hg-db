@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/admin.mjs": {
+      "includeFiles": "private/admin.html"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/private/:path*",
+      "destination": "/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/api/admin"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    }
+  ]
+}
