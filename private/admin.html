@@ -333,6 +333,63 @@
       padding: 16px;
     }
 
+    .workflow-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .workflow-card {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .workflow-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .workflow-card h3 {
+      max-width: 780px;
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .workflow-card p {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .workflow-controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .workflow-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .workflow-field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
     .metric strong {
       display: block;
       color: var(--brand-dark);
@@ -511,7 +568,9 @@
       .topbar,
       .grid.metrics,
       .grid.two,
-      .grid.three {
+      .grid.three,
+      .workflow-controls,
+      .workflow-fields {
         grid-template-columns: 1fr;
       }
 
@@ -712,36 +771,22 @@
           <div class="section-head">
             <div>
               <h2>Month 1 Onboarding</h2>
-              <p>Keep the original launch setup checklist, but operate it as assigned work with owners, deadlines, blockers, and next actions.</p>
+              <p>Work through each setup item as a readable card with status, owner, deadline, current state, and next action.</p>
             </div>
             <span class="tag">Setup workflow</span>
           </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Item</th><th>Owner</th><th>Status</th><th>Priority</th><th>Deadline</th><th>Current State</th><th>Next Action</th></tr>
-              </thead>
-              <tbody data-onboarding-table></tbody>
-            </table>
-          </div>
+          <div class="workflow-list" data-onboarding-list></div>
         </div>
 
         <div class="section">
           <div class="section-head">
             <div>
               <h2>Channel Setup</h2>
-              <p>Track channel access, profile readiness, positioning, content role, owner, deadline, and baseline metrics.</p>
+              <p>Track each channel as a setup card so positioning notes and baseline notes stay readable.</p>
             </div>
             <span class="tag">FB / IG / XHS / TikTok</span>
           </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Channel</th><th>Access</th><th>Audit</th><th>Positioning Notes</th><th>Content Role</th><th>Owner</th><th>Deadline</th><th>Baseline Notes</th></tr>
-              </thead>
-              <tbody data-channel-table></tbody>
-            </table>
-          </div>
+          <div class="workflow-list" data-channel-list></div>
         </div>
       </div>
 

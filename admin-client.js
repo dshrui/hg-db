@@ -444,6 +444,10 @@
     return "<select " + attrs + ">" + options(values, selected) + "</select>";
   }
 
+  function workflowField(label, controlHtml) {
+    return "<div class=\"workflow-field\"><label>" + escapeHtml(label) + "</label>" + controlHtml + "</div>";
+  }
+
   function findTask(id) {
     return database.tasks.find(function (task) { return task.id === id; });
   }
@@ -553,11 +557,52 @@
       "</tr>";
   }
 
+  function onboardingCard(task) {
+    var prefix = "data-task-id=\"" + escapeHtml(task.id) + "\"";
+    return "<div class=\"workflow-card\" data-onboarding-card=\"" + escapeHtml(task.id) + "\">" +
+      "<div class=\"workflow-card-head\">" +
+      "<div><h3>" + escapeHtml(task.title) + "</h3><p>" + escapeHtml(task.category || "Onboarding") + "</p></div>" +
+      "<span class=\"tag\">" + escapeHtml(task.status || "Not started") + "</span>" +
+      "</div>" +
+      "<div class=\"workflow-controls\">" +
+      workflowField("Owner", input(prefix + " data-task-field=\"owner\"", task.owner)) +
+      workflowField("Status", select(prefix + " data-task-field=\"status\"", taskStatuses, task.status)) +
+      workflowField("Priority", select(prefix + " data-task-field=\"priority\"", priorities, task.priority)) +
+      workflowField("Deadline", input(prefix + " data-task-field=\"deadline\" type=\"date\"", task.deadline)) +
+      "</div>" +
+      "<div class=\"workflow-fields\">" +
+      workflowField("Current state / answer", textarea(prefix + " data-task-field=\"notes\" placeholder=\"What is the current answer or status?\"", task.notes)) +
+      workflowField("Fix / next action", textarea(prefix + " data-task-field=\"nextAction\" placeholder=\"What needs to happen next?\"", task.nextAction)) +
+      "</div>" +
+      "</div>";
+  }
+
+  function channelCard(channel) {
+    var prefix = "data-channel-id=\"" + escapeHtml(channel.id) + "\"";
+    return "<div class=\"workflow-card\" data-channel-card=\"" + escapeHtml(channel.id) + "\">" +
+      "<div class=\"workflow-card-head\">" +
+      "<div><h3>" + escapeHtml(channel.channel) + "</h3><p>Setup readiness, role, baseline notes, and content positioning.</p></div>" +
+      "<span class=\"tag\">" + escapeHtml(channel.accessStatus || "Not started") + "</span>" +
+      "</div>" +
+      "<div class=\"workflow-controls\">" +
+      workflowField("Access", select(prefix + " data-channel-field=\"accessStatus\"", channelAccessStatuses, channel.accessStatus)) +
+      workflowField("Profile audit", select(prefix + " data-channel-field=\"auditStatus\"", auditStatuses, channel.auditStatus)) +
+      workflowField("Owner", input(prefix + " data-channel-field=\"owner\"", channel.owner)) +
+      workflowField("Deadline", input(prefix + " data-channel-field=\"deadline\" type=\"date\"", channel.deadline)) +
+      "</div>" +
+      "<div class=\"workflow-fields\">" +
+      workflowField("Positioning notes", textarea(prefix + " data-channel-field=\"positioningNotes\"", channel.positioningNotes)) +
+      workflowField("Content role", textarea(prefix + " data-channel-field=\"contentRole\"", channel.contentRole)) +
+      workflowField("Baseline metrics notes", textarea(prefix + " data-channel-field=\"baselineNotes\"", channel.baselineNotes)) +
+      "</div>" +
+      "</div>";
+  }
+
   function renderTasks() {
-    document.querySelector("[data-onboarding-table]").innerHTML = database.tasks.filter(function (task) {
+    document.querySelector("[data-onboarding-list]").innerHTML = database.tasks.filter(function (task) {
       return isOnboardingTask(task);
     }).map(function (task) {
-      return taskRow(task, true);
+      return onboardingCard(task);
     }).join("");
 
     document.querySelector("[data-task-table]").innerHTML = database.tasks.map(function (task) {
@@ -566,18 +611,8 @@
   }
 
   function renderChannels() {
-    document.querySelector("[data-channel-table]").innerHTML = database.channels.map(function (channel) {
-      var prefix = "data-channel-id=\"" + escapeHtml(channel.id) + "\"";
-      return "<tr>" +
-        "<td>" + escapeHtml(channel.channel) + "</td>" +
-        "<td>" + select(prefix + " data-channel-field=\"accessStatus\"", channelAccessStatuses, channel.accessStatus) + "</td>" +
-        "<td>" + select(prefix + " data-channel-field=\"auditStatus\"", auditStatuses, channel.auditStatus) + "</td>" +
-        "<td>" + textarea(prefix + " data-channel-field=\"positioningNotes\"", channel.positioningNotes) + "</td>" +
-        "<td>" + textarea(prefix + " data-channel-field=\"contentRole\"", channel.contentRole) + "</td>" +
-        "<td>" + input(prefix + " data-channel-field=\"owner\"", channel.owner) + "</td>" +
-        "<td>" + input(prefix + " data-channel-field=\"deadline\" type=\"date\"", channel.deadline) + "</td>" +
-        "<td>" + textarea(prefix + " data-channel-field=\"baselineNotes\"", channel.baselineNotes) + "</td>" +
-        "</tr>";
+    document.querySelector("[data-channel-list]").innerHTML = database.channels.map(function (channel) {
+      return channelCard(channel);
     }).join("");
   }
 
@@ -669,6 +704,9 @@
       var task = findTask(target.dataset.taskId);
       if (task) {
         task[target.dataset.taskField] = target.value;
+        if (target.dataset.taskField === "status" && target.closest(".workflow-card")) {
+          target.closest(".workflow-card").querySelector(".tag").textContent = target.value;
+        }
         markChanged("Task saved locally. Sheet autosave queued.");
       }
     } else if (target.dataset.contentId) {
@@ -681,6 +719,9 @@
       var channel = findChannel(target.dataset.channelId);
       if (channel) {
         channel[target.dataset.channelField] = target.value;
+        if (target.dataset.channelField === "accessStatus" && target.closest(".workflow-card")) {
+          target.closest(".workflow-card").querySelector(".tag").textContent = target.value;
+        }
         markChanged("Channel setup saved locally. Sheet autosave queued.");
       }
     } else if (target.dataset.calendarDate) {
