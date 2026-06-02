@@ -5,7 +5,7 @@
   "description": "Frontend and password-protected backend for the HG Services June launch tracker.",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check lib/vercel-adapter.mjs && node --check lib/vercel-auth.mjs && node --check api/admin.mjs && node --check api/login.mjs && node --check api/logout.mjs && node --check api/sheet/push.mjs && node --check api/sheet/pull.mjs"
+    "check": "node --check server.js && node --check admin-client.js && node --check lib/vercel-adapter.mjs && node --check lib/vercel-auth.mjs && node --check api/admin.mjs && node --check api/login.mjs && node --check api/logout.mjs && node --check api/sheet/push.mjs && node --check api/sheet/pull.mjs"
   },
   "engines": {
     "node": ">=18"

@@ -1,5 +1,5 @@
 /*
-  HG Services Marketing Launch Tracker sync endpoint
+  HG Services Ops Tool sync endpoint
 
   Setup:
   1. Create or open the Google Sheet for this client.
@@ -18,33 +18,49 @@
 const SPREADSHEET_ID = "";
 
 const TAB_NAMES = {
-  checklist: "Checklist",
+  tasks: "Tasks",
+  content: "Content",
   calendar: "Calendar",
   channels: "Channels",
-  contentPlan: "Content Plan",
+  reports: "Reports",
   settings: "Settings",
   syncLog: "Sync Log",
 };
 
-const CHECKLIST_HEADERS = [
+const TASK_HEADERS = [
   "ID",
-  "Section",
-  "Checklist Item",
-  "Done",
+  "Title",
+  "Category",
+  "Owner",
+  "Role",
   "Status",
+  "Priority",
   "Deadline",
-  "Answer / Current State",
-  "Fix / Next Action",
+  "Blocker",
+  "Next Action",
+  "Notes",
+  "Updated At",
+];
+
+const CONTENT_HEADERS = [
+  "ID",
+  "Week",
+  "Platform",
+  "Pillar",
+  "Topic",
+  "Asset Needed",
+  "Status",
+  "Owner",
+  "Publish Date",
+  "Notes",
   "Updated At",
 ];
 
 const CALENDAR_HEADERS = [
   "Date",
-  "Week",
-  "Day",
-  "Planning Notes",
-  "Content / Deadline Type",
+  "Notes",
   "Owner",
+  "Type",
   "Updated At",
 ];
 
@@ -61,19 +77,25 @@ const CHANNEL_HEADERS = [
   "Updated At",
 ];
 
-const CONTENT_PLAN_HEADERS = [
-  "ID",
-  "Week",
-  "Pillar",
-  "Platform",
-  "Topic",
-  "Asset Needed",
-  "Caption Status",
-  "Design Status",
-  "Approval Status",
-  "Publish Date",
-  "Notes",
+const REPORT_HEADERS = [
+  "Key",
+  "Label",
+  "Output",
+  "KPI Notes",
+  "Learnings",
+  "Next Actions",
   "Updated At",
+];
+
+const SYNC_HEADERS = [
+  "Timestamp",
+  "Action",
+  "Source",
+  "Tasks",
+  "Content",
+  "Calendar",
+  "Channels",
+  "Reports",
 ];
 
 function getWorkbook_() {
@@ -89,45 +111,34 @@ function getOrCreateSheet_(workbook, name) {
 
 function setupSheet() {
   const workbook = getWorkbook_();
-  const checklist = getOrCreateSheet_(workbook, TAB_NAMES.checklist);
+  const tasks = getOrCreateSheet_(workbook, TAB_NAMES.tasks);
+  const content = getOrCreateSheet_(workbook, TAB_NAMES.content);
   const calendar = getOrCreateSheet_(workbook, TAB_NAMES.calendar);
   const channels = getOrCreateSheet_(workbook, TAB_NAMES.channels);
-  const contentPlan = getOrCreateSheet_(workbook, TAB_NAMES.contentPlan);
+  const reports = getOrCreateSheet_(workbook, TAB_NAMES.reports);
   const settings = getOrCreateSheet_(workbook, TAB_NAMES.settings);
   const syncLog = getOrCreateSheet_(workbook, TAB_NAMES.syncLog);
 
-  checklist.clear();
-  calendar.clear();
-  channels.clear();
-  contentPlan.clear();
-  settings.clear();
-  syncLog.clear();
-
-  checklist.getRange(1, 1, 1, CHECKLIST_HEADERS.length).setValues([CHECKLIST_HEADERS]);
-  calendar.getRange(1, 1, 1, CALENDAR_HEADERS.length).setValues([CALENDAR_HEADERS]);
-  channels.getRange(1, 1, 1, CHANNEL_HEADERS.length).setValues([CHANNEL_HEADERS]);
-  contentPlan.getRange(1, 1, 1, CONTENT_PLAN_HEADERS.length).setValues([CONTENT_PLAN_HEADERS]);
-  settings.getRange(1, 1, 1, 3).setValues([["Key", "Value", "Notes"]]);
-  settings.getRange(2, 1, 5, 3).setValues([
+  replaceRows_(tasks, TASK_HEADERS, []);
+  replaceRows_(content, CONTENT_HEADERS, []);
+  replaceRows_(calendar, CALENDAR_HEADERS, []);
+  replaceRows_(channels, CHANNEL_HEADERS, []);
+  replaceRows_(reports, REPORT_HEADERS, []);
+  replaceRows_(settings, ["Key", "Value", "Notes"], [
     ["client", "HG Services", "Client name"],
     ["month", "June 2026", "Launch month"],
-    ["channels", "Facebook, Instagram, XiaoHongShu, TikTok", "Active launch channels"],
-    ["source_html", "private/admin.html", "Backend admin tracker"],
+    ["source", "HG Services ops tool", "Primary workspace"],
     ["last_sync", "", "Updated by this script"],
   ]);
-  syncLog.getRange(1, 1, 1, 7).setValues([["Timestamp", "Action", "Source", "Checklist Items", "Calendar Days", "Channels", "Content Rows"]]);
+  replaceRows_(syncLog, SYNC_HEADERS, []);
 
-  [checklist, calendar, channels, contentPlan, settings, syncLog].forEach((sheet) => {
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, sheet.getLastColumn()).setFontWeight("bold").setBackground("#1769AA").setFontColor("#FFFFFF");
-    sheet.autoResizeColumns(1, Math.max(sheet.getLastColumn(), 1));
-  });
+  [tasks, content, calendar, channels, reports, settings, syncLog].forEach(formatSheet_);
 }
 
 function doPost(event) {
   const payload = JSON.parse((event.postData && event.postData.contents) || "{}");
-  const database = payload.database || payload;
-  writeDatabase_(database, payload.source || "HTML tracker");
+  const database = normalizeIncomingDatabase_(payload.database || payload);
+  writeDatabase_(database, payload.source || "HG Services ops tool");
   return json_({ ok: true, updatedAt: new Date().toISOString() });
 }
 
@@ -147,172 +158,286 @@ function doGet(event) {
   return json_(response);
 }
 
+function normalizeIncomingDatabase_(database) {
+  const value = database && typeof database === "object" ? database : {};
+  return {
+    version: 2,
+    updatedAt: value.updatedAt || new Date().toISOString(),
+    tasks: Array.isArray(value.tasks) ? value.tasks : legacyChecklistsToTasks_(value.checklists || {}),
+    contentItems: Array.isArray(value.contentItems) ? value.contentItems : legacyContentToItems_(value.contentPlan || {}),
+    calendarEntries: normalizeCalendar_(value.calendarEntries || value.calendar || {}),
+    channels: Array.isArray(value.channels) ? value.channels : objectValues_(value.channels || {}),
+    reports: value.reports && typeof value.reports === "object" ? value.reports : {},
+    settings: value.settings && typeof value.settings === "object" ? value.settings : {},
+    syncLog: Array.isArray(value.syncLog) ? value.syncLog : [],
+  };
+}
+
+function legacyChecklistsToTasks_(checklists) {
+  return Object.keys(checklists || {}).sort().map((id) => {
+    const item = checklists[id] || {};
+    return {
+      id,
+      title: item.title || id,
+      category: item.section || "Onboarding",
+      owner: "Ops",
+      role: "Ops",
+      status: item.done ? "Done" : normalizeTaskStatus_(item.status),
+      priority: "Medium",
+      deadline: item.deadline || "",
+      blocker: item.status === "Blocked" ? item.fix || "" : "",
+      nextAction: item.fix || "",
+      notes: item.answer || "",
+    };
+  });
+}
+
+function legacyContentToItems_(contentPlan) {
+  return Object.keys(contentPlan || {}).sort().map((id) => {
+    const item = contentPlan[id] || {};
+    return {
+      id,
+      week: item.week || "",
+      platform: item.platform || "",
+      pillar: item.pillar || "",
+      topic: item.topic || "",
+      assetNeeded: item.assetNeeded || "",
+      status: normalizeContentStatus_(item.approvalStatus || item.designStatus || item.captionStatus),
+      owner: "Ops",
+      publishDate: item.publishDate || "",
+      notes: item.notes || "",
+    };
+  });
+}
+
+function normalizeCalendar_(calendar) {
+  const entries = {};
+  Object.keys(calendar || {}).forEach((date) => {
+    const value = calendar[date];
+    if (value && typeof value === "object") {
+      entries[date] = {
+        date: value.date || date,
+        notes: value.notes || "",
+        owner: value.owner || "",
+        type: value.type || "",
+      };
+    } else {
+      entries[date] = {
+        date,
+        notes: value || "",
+        owner: "",
+        type: "",
+      };
+    }
+  });
+  return entries;
+}
+
+function objectValues_(value) {
+  return Object.keys(value || {}).sort().map((key) => {
+    const row = value[key] || {};
+    row.id = row.id || key;
+    return row;
+  });
+}
+
 function writeDatabase_(database, source) {
   const workbook = getWorkbook_();
-  const checklist = getOrCreateSheet_(workbook, TAB_NAMES.checklist);
-  const calendar = getOrCreateSheet_(workbook, TAB_NAMES.calendar);
-  const channels = getOrCreateSheet_(workbook, TAB_NAMES.channels);
-  const contentPlan = getOrCreateSheet_(workbook, TAB_NAMES.contentPlan);
-  const settings = getOrCreateSheet_(workbook, TAB_NAMES.settings);
-  const syncLog = getOrCreateSheet_(workbook, TAB_NAMES.syncLog);
+  const tasksSheet = getOrCreateSheet_(workbook, TAB_NAMES.tasks);
+  const contentSheet = getOrCreateSheet_(workbook, TAB_NAMES.content);
+  const calendarSheet = getOrCreateSheet_(workbook, TAB_NAMES.calendar);
+  const channelsSheet = getOrCreateSheet_(workbook, TAB_NAMES.channels);
+  const reportsSheet = getOrCreateSheet_(workbook, TAB_NAMES.reports);
+  const settingsSheet = getOrCreateSheet_(workbook, TAB_NAMES.settings);
+  const syncLogSheet = getOrCreateSheet_(workbook, TAB_NAMES.syncLog);
   const now = new Date().toISOString();
-  const checklistRows = Object.keys(database.checklists || {}).sort().map((id) => {
-    const item = database.checklists[id] || {};
-    return [
-      id,
-      item.section || "",
-      item.title || "",
-      item.done ? "TRUE" : "FALSE",
-      item.status || "",
-      item.deadline || "",
-      item.answer || "",
-      item.fix || "",
-      now,
-    ];
-  });
-  const calendarRows = Object.keys(database.calendar || {}).sort().map((date) => {
-    const parsed = parseDate_(date);
+
+  const taskRows = (database.tasks || []).map((item) => [
+    item.id || "",
+    item.title || "",
+    item.category || "",
+    item.owner || "",
+    item.role || "",
+    item.status || "",
+    item.priority || "",
+    item.deadline || "",
+    item.blocker || "",
+    item.nextAction || "",
+    item.notes || "",
+    now,
+  ]);
+
+  const contentRows = (database.contentItems || []).map((item) => [
+    item.id || "",
+    item.week || "",
+    item.platform || "",
+    item.pillar || "",
+    item.topic || "",
+    item.assetNeeded || "",
+    item.status || "",
+    item.owner || "",
+    item.publishDate || "",
+    item.notes || "",
+    now,
+  ]);
+
+  const calendarRows = Object.keys(database.calendarEntries || {}).sort().map((date) => {
+    const item = database.calendarEntries[date] || {};
     return [
       date,
-      parsed.week,
-      parsed.dayName,
-      database.calendar[date] || "",
-      "",
-      "",
-      now,
-    ];
-  });
-  const channelRows = Object.keys(database.channels || {}).sort().map((id) => {
-    const item = database.channels[id] || {};
-    return [
-      id,
-      item.channel || id,
-      item.accessStatus || "",
-      item.auditStatus || "",
-      item.positioningNotes || "",
-      item.contentRole || "",
-      item.owner || "",
-      item.deadline || "",
-      item.baselineNotes || "",
-      now,
-    ];
-  });
-  const contentRows = Object.keys(database.contentPlan || {}).sort().map((id) => {
-    const item = database.contentPlan[id] || {};
-    return [
-      id,
-      item.week || "",
-      item.pillar || "",
-      item.platform || "",
-      item.topic || "",
-      item.assetNeeded || "",
-      item.captionStatus || "",
-      item.designStatus || "",
-      item.approvalStatus || "",
-      item.publishDate || "",
       item.notes || "",
+      item.owner || "",
+      item.type || "",
       now,
     ];
   });
 
-  replaceRows_(checklist, CHECKLIST_HEADERS, checklistRows);
-  replaceRows_(calendar, CALENDAR_HEADERS, calendarRows);
-  replaceRows_(channels, CHANNEL_HEADERS, channelRows);
-  replaceRows_(contentPlan, CONTENT_PLAN_HEADERS, contentRows);
-  settings.getRange("A1:C1").setValues([["Key", "Value", "Notes"]]);
-  settings.getRange("A2:C5").setValues([
-    ["client", "HG Services", "Client name"],
-    ["month", "June 2026", "Launch month"],
-    ["channels", "Facebook, Instagram, XiaoHongShu, TikTok", "Active launch channels"],
-    ["last_sync", now, "Last HTML push"],
+  const channelRows = (database.channels || []).map((item) => [
+    item.id || "",
+    item.channel || item.id || "",
+    item.accessStatus || "",
+    item.auditStatus || "",
+    item.positioningNotes || "",
+    item.contentRole || "",
+    item.owner || "",
+    item.deadline || "",
+    item.baselineNotes || "",
+    now,
   ]);
-  appendLog_(syncLog, now, "push", source, checklistRows.length, calendarRows.length, channelRows.length, contentRows.length);
+
+  const reportRows = Object.keys(database.reports || {}).sort().map((key) => {
+    const item = database.reports[key] || {};
+    return [
+      key,
+      item.label || key,
+      item.output || "",
+      item.kpis || "",
+      item.learnings || "",
+      item.nextActions || "",
+      now,
+    ];
+  });
+
+  replaceRows_(tasksSheet, TASK_HEADERS, taskRows);
+  replaceRows_(contentSheet, CONTENT_HEADERS, contentRows);
+  replaceRows_(calendarSheet, CALENDAR_HEADERS, calendarRows);
+  replaceRows_(channelsSheet, CHANNEL_HEADERS, channelRows);
+  replaceRows_(reportsSheet, REPORT_HEADERS, reportRows);
+  replaceRows_(settingsSheet, ["Key", "Value", "Notes"], [
+    ["client", database.settings.client || "HG Services", "Client name"],
+    ["month", database.settings.month || "June 2026", "Launch month"],
+    ["focus", database.settings.focus || "", "Marketing focus"],
+    ["last_sync", now, "Last ops tool push"],
+  ]);
+
+  appendLog_(syncLogSheet, now, "push", source, taskRows.length, contentRows.length, calendarRows.length, channelRows.length, reportRows.length);
+  [tasksSheet, contentSheet, calendarSheet, channelsSheet, reportsSheet, settingsSheet, syncLogSheet].forEach(formatSheet_);
 }
 
 function readDatabase_() {
   const workbook = getWorkbook_();
-  const checklist = getOrCreateSheet_(workbook, TAB_NAMES.checklist);
-  const calendar = getOrCreateSheet_(workbook, TAB_NAMES.calendar);
-  const channels = getOrCreateSheet_(workbook, TAB_NAMES.channels);
-  const contentPlan = getOrCreateSheet_(workbook, TAB_NAMES.contentPlan);
-  const checklists = {};
-  const calendarData = {};
-  const channelData = {};
-  const contentPlanData = {};
-  const checklistValues = checklist.getDataRange().getValues();
-  const calendarValues = calendar.getDataRange().getValues();
-  const channelValues = channels.getDataRange().getValues();
-  const contentPlanValues = contentPlan.getDataRange().getValues();
+  const tasks = readRows_(getOrCreateSheet_(workbook, TAB_NAMES.tasks));
+  const content = readRows_(getOrCreateSheet_(workbook, TAB_NAMES.content));
+  const calendar = readRows_(getOrCreateSheet_(workbook, TAB_NAMES.calendar));
+  const channels = readRows_(getOrCreateSheet_(workbook, TAB_NAMES.channels));
+  const reports = readRows_(getOrCreateSheet_(workbook, TAB_NAMES.reports));
+  const settingsRows = readRows_(getOrCreateSheet_(workbook, TAB_NAMES.settings));
+  const settings = {};
+  const reportData = {};
+  const calendarEntries = {};
 
-  checklistValues.slice(1).forEach((row) => {
-    const id = row[0];
-    if (!id) {
+  settingsRows.forEach((row) => {
+    if (row.Key) {
+      settings[row.Key] = row.Value || "";
+    }
+  });
+
+  reports.forEach((row) => {
+    const key = row.Key;
+    if (!key) {
       return;
     }
-    checklists[id] = {
-      section: row[1] || "",
-      title: row[2] || "",
-      done: String(row[3]).toUpperCase() === "TRUE",
-      status: row[4] || "Not started",
-      deadline: normalizeDateValue_(row[5]),
-      answer: row[6] || "",
-      fix: row[7] || "",
+    reportData[key] = {
+      label: row.Label || key,
+      output: row.Output || "",
+      kpis: row["KPI Notes"] || "",
+      learnings: row.Learnings || "",
+      nextActions: row["Next Actions"] || "",
     };
   });
 
-  calendarValues.slice(1).forEach((row) => {
-    const date = normalizeDateValue_(row[0]);
-    if (date) {
-      calendarData[date] = row[3] || "";
-    }
-  });
-
-  channelValues.slice(1).forEach((row) => {
-    const id = row[0];
-    if (!id) {
+  calendar.forEach((row) => {
+    const date = normalizeDateValue_(row.Date);
+    if (!date) {
       return;
     }
-    channelData[id] = {
-      channel: row[1] || id,
-      accessStatus: row[2] || "",
-      auditStatus: row[3] || "",
-      positioningNotes: row[4] || "",
-      contentRole: row[5] || "",
-      owner: row[6] || "",
-      deadline: normalizeDateValue_(row[7]),
-      baselineNotes: row[8] || "",
-    };
-  });
-
-  contentPlanValues.slice(1).forEach((row) => {
-    const id = row[0];
-    if (!id) {
-      return;
-    }
-    contentPlanData[id] = {
-      id,
-      week: row[1] || "",
-      pillar: row[2] || "",
-      platform: row[3] || "",
-      topic: row[4] || "",
-      assetNeeded: row[5] || "",
-      captionStatus: row[6] || "",
-      designStatus: row[7] || "",
-      approvalStatus: row[8] || "",
-      publishDate: normalizeDateValue_(row[9]),
-      notes: row[10] || "",
+    calendarEntries[date] = {
+      date,
+      notes: row.Notes || "",
+      owner: row.Owner || "",
+      type: row.Type || "",
     };
   });
 
   return {
-    version: 1,
+    version: 2,
     updatedAt: new Date().toISOString(),
-    checklists,
-    calendar: calendarData,
-    channels: channelData,
-    contentPlan: contentPlanData,
-    settings: {},
+    tasks: tasks.map((row) => ({
+      id: row.ID || "",
+      title: row.Title || "",
+      category: row.Category || "",
+      owner: row.Owner || "",
+      role: row.Role || "",
+      status: row.Status || "Not started",
+      priority: row.Priority || "Medium",
+      deadline: normalizeDateValue_(row.Deadline),
+      blocker: row.Blocker || "",
+      nextAction: row["Next Action"] || "",
+      notes: row.Notes || "",
+    })).filter((row) => row.id),
+    contentItems: content.map((row) => ({
+      id: row.ID || "",
+      week: row.Week || "",
+      platform: row.Platform || "",
+      pillar: row.Pillar || "",
+      topic: row.Topic || "",
+      assetNeeded: row["Asset Needed"] || "",
+      status: row.Status || "Idea",
+      owner: row.Owner || "",
+      publishDate: normalizeDateValue_(row["Publish Date"]),
+      notes: row.Notes || "",
+    })).filter((row) => row.id),
+    calendarEntries,
+    channels: channels.map((row) => ({
+      id: row.ID || "",
+      channel: row.Channel || row.ID || "",
+      accessStatus: row.Access || "",
+      auditStatus: row["Profile Audit"] || "",
+      positioningNotes: row["Positioning Notes"] || "",
+      contentRole: row["Content Role"] || "",
+      owner: row.Owner || "",
+      deadline: normalizeDateValue_(row.Deadline),
+      baselineNotes: row["Baseline Metrics Notes"] || "",
+    })).filter((row) => row.id),
+    reports: reportData,
+    settings,
+    syncLog: [],
   };
+}
+
+function readRows_(sheet) {
+  const values = sheet.getDataRange().getValues();
+  if (!values.length) {
+    return [];
+  }
+  const headers = values[0].map((header) => String(header || ""));
+  return values.slice(1).filter((row) => row.some((cell) => cell !== "")).map((row) => {
+    const object = {};
+    headers.forEach((header, index) => {
+      object[header] = row[index];
+    });
+    return object;
+  });
 }
 
 function replaceRows_(sheet, headers, rows) {
@@ -324,21 +449,42 @@ function replaceRows_(sheet, headers, rows) {
   sheet.setFrozenRows(1);
 }
 
-function appendLog_(sheet, timestamp, action, source, checklistCount, calendarCount, channelCount, contentCount) {
+function appendLog_(sheet, timestamp, action, source, taskCount, contentCount, calendarCount, channelCount, reportCount) {
   if (sheet.getLastRow() === 0) {
-    sheet.getRange(1, 1, 1, 7).setValues([["Timestamp", "Action", "Source", "Checklist Items", "Calendar Days", "Channels", "Content Rows"]]);
+    sheet.getRange(1, 1, 1, SYNC_HEADERS.length).setValues([SYNC_HEADERS]);
   }
-  sheet.appendRow([timestamp, action, source, checklistCount, calendarCount, channelCount, contentCount]);
+  sheet.appendRow([timestamp, action, source, taskCount, contentCount, calendarCount, channelCount, reportCount]);
 }
 
-function parseDate_(dateString) {
-  const date = new Date(dateString + "T00:00:00Z");
-  const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const day = Number(dateString.slice(-2));
-  return {
-    week: day > 28 ? "Report" : "Week " + Math.ceil(day / 7),
-    dayName: names[date.getUTCDay()],
-  };
+function formatSheet_(sheet) {
+  sheet.setFrozenRows(1);
+  if (sheet.getLastColumn() > 0) {
+    sheet.getRange(1, 1, 1, sheet.getLastColumn()).setFontWeight("bold").setBackground("#1769AA").setFontColor("#FFFFFF");
+    sheet.autoResizeColumns(1, Math.max(sheet.getLastColumn(), 1));
+  }
+}
+
+function normalizeTaskStatus_(value) {
+  return value === "Done" || value === "In progress" || value === "Waiting client" || value === "Blocked" ? value : "Not started";
+}
+
+function normalizeContentStatus_(value) {
+  if (value === "Published" || value === "Scheduled" || value === "Approved") {
+    return value;
+  }
+  if (value === "Sent") {
+    return "Sent for approval";
+  }
+  if (value === "Ready") {
+    return "Approved";
+  }
+  if (value === "Drafting") {
+    return "Caption drafting";
+  }
+  if (value === "In progress") {
+    return "Design in progress";
+  }
+  return "Idea";
 }
 
 function normalizeDateValue_(value) {

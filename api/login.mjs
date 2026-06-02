@@ -5,14 +5,15 @@ export async function POST(request) {
   const form = new URLSearchParams(await request.text());
   const username = form.get("username") || "";
   const password = form.get("password") || "";
+  const sessionUser = verifyCredentials(username, password);
 
-  if (!verifyCredentials(username, password)) {
+  if (!sessionUser) {
     return redirectResponse("/login?error=1");
   }
 
   try {
     return redirectResponse("/admin", {
-      "Set-Cookie": createSessionCookie(request, username),
+      "Set-Cookie": createSessionCookie(request, sessionUser),
     });
   } catch (error) {
     return redirectResponse("/login?error=1");

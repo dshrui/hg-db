@@ -1,14 +1,19 @@
 import { readFile } from "node:fs/promises";
 import { methodNotAllowed, sendWebResponse, toWebRequest } from "../lib/vercel-adapter.mjs";
-import { isAuthenticated, redirectResponse } from "../lib/vercel-auth.mjs";
+import { getSession, redirectResponse } from "../lib/vercel-auth.mjs";
 
 export async function GET(request) {
-  if (!isAuthenticated(request)) {
+  const session = getSession(request);
+  if (!session) {
     return redirectResponse("/login");
   }
 
   const html = await readFile(new URL("../private/admin.html", import.meta.url), "utf8");
-  return new Response(html, {
+  const sessionScript = `<script>window.HG_SESSION=${JSON.stringify({
+    username: session.username,
+    role: session.role,
+  }).replace(/</g, "\\u003c")};</script>`;
+  return new Response(html.replace("</head>", `${sessionScript}</head>`), {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "no-store",

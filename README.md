@@ -1,17 +1,17 @@
-# HG Services June Launch Control
+# HG Services Ops Control
 
-Internal marketing launch tracker for HG Services' first-month marketing foundation work.
+Internal marketing operations tool for HG Services' first-month onboarding, task delegation, content pipeline, calendar planning, reporting, and Google Sheet backup.
 
 The project now has two surfaces on one Vercel deployment:
 
 - Partner-safe frontend at `/`
-- Password-protected admin/backend at `/admin`
+- Password-protected ops/backend workflow at `/admin`
 
 ## What This Includes
 
 - `index.html` - partner-safe frontend without database or Google Sheet controls for the Node backend.
 - `docs/index.html` - same partner-safe frontend published by GitHub Pages.
-- `private/admin.html` - admin dashboard with database tools and Google Sheet sync buttons.
+- `private/admin.html` - authenticated ops workflow for dashboard, onboarding, tasks, content, calendar, reports, and sync.
 - `login.html` - backend login screen.
 - `server.js` - password-protected backend and Google Sheet proxy.
 - `api/` - Vercel serverless backend routes for login, logout, admin, and Google Sheet sync.
@@ -24,11 +24,11 @@ The project now has two surfaces on one Vercel deployment:
 ## Main Workflow
 
 1. Share `/` with a partner for the tracker view without backend controls.
-2. Use `/admin` for database tools, backup, and Google Sheet sync.
+2. Use `/admin` for the command center, then work through `/admin/onboarding`, `/admin/tasks`, `/admin/content`, `/admin/calendar`, and `/admin/reports`.
 3. Configure backend environment variables before using `/admin`.
 4. Deploy the Apps Script in a Google Sheet.
 5. Set `APPS_SCRIPT_URL` on the backend.
-6. Use Push to Google Sheet and Pull from Google Sheet from the admin page.
+6. Use debounced autosave to Google Sheet, plus Pull latest and admin-only backup controls.
 
 ## Backend Setup
 
@@ -39,6 +39,8 @@ For Vercel, add these in Project Settings > Environment Variables:
 ```bash
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=replace-with-a-strong-password
+OPS_USERNAME=ops
+OPS_PASSWORD=replace-with-a-strong-ops-password
 SESSION_SECRET=replace-with-a-long-random-secret
 APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
 ```
@@ -47,6 +49,7 @@ Deploy the repo to Vercel from GitHub. The live Vercel site will then expose:
 
 - Partner view: `https://your-project.vercel.app/`
 - Admin view: `https://your-project.vercel.app/admin`
+- Ops pages: `/admin/onboarding`, `/admin/tasks`, `/admin/content`, `/admin/calendar`, `/admin/reports`
 
 For local Node testing without Vercel, you can still run:
 
@@ -64,7 +67,7 @@ Then open:
 1. Create or open a Google Sheet.
 2. Go to `Extensions > Apps Script`.
 3. Paste the contents of `google-sheet-setup/google-apps-script.gs`.
-4. Run `setupSheet` once.
+4. Run `setupSheet` once to create `Tasks`, `Content`, `Calendar`, `Channels`, `Reports`, `Settings`, and `Sync Log`.
 5. Deploy as a Web App:
    - Execute as: `Me`
    - Access: `Anyone with the link`
@@ -73,7 +76,8 @@ Then open:
 ## Notes
 
 - The partner frontend hides database and sync controls.
-- The admin page requires backend login through Vercel functions or `server.js`.
+- Admin and Ops roles require backend login through Vercel functions or `server.js`.
+- Admin can use backup/import/clear controls; Ops can update workflow data.
 - No Google credentials or Apps Script URL are stored in the frontend HTML.
 - The Google Sheet acts as backup, reporting database, and recovery source.
 - GitHub Pages is configured to publish from `docs/` so backend files are not served by the live static site.

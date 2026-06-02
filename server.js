@@ -8,6 +8,8 @@ const privateDir = path.join(rootDir, "private");
 const port = Number(process.env.PORT || 3000);
 const adminUsername = process.env.ADMIN_USERNAME || "admin";
 const adminPassword = process.env.ADMIN_PASSWORD || "";
+const opsUsername = process.env.OPS_USERNAME || "ops";
+const opsPassword = process.env.OPS_PASSWORD || "";
 const appsScriptUrl = process.env.APPS_SCRIPT_URL || "";
 const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString("hex");
 const sessions = new Map();
@@ -52,10 +54,20 @@ function sign(value) {
   return crypto.createHmac("sha256", sessionSecret).update(value).digest("hex");
 }
 
-function createSession() {
+function verifyCredentials(username, password) {
+  if (adminPassword && safeEqual(username, adminUsername) && safeEqual(password, adminPassword)) {
+    return { username: adminUsername, role: "admin" };
+  }
+  if (opsPassword && safeEqual(username, opsUsername) && safeEqual(password, opsPassword)) {
+    return { username: opsUsername, role: "ops" };
+  }
+  return null;
+}
+
+function createSession(sessionUser) {
   const id = crypto.randomBytes(32).toString("hex");
   const signed = `${id}.${sign(id)}`;
-  sessions.set(id, { createdAt: Date.now() });
+  sessions.set(id, { createdAt: Date.now(), username: sessionUser.username, role: sessionUser.role });
   return signed;
 }
 
@@ -68,7 +80,7 @@ function getSession(req) {
   if (!id || !signature || !safeEqual(signature, sign(id)) || !sessions.has(id)) {
     return null;
   }
-  return { id };
+  return { id, ...sessions.get(id) };
 }
 
 function destroySession(req) {
@@ -165,11 +177,46 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === "GET" && url.pathname.startsWith("/private/")) {
+      redirect(res, "/");
+      return;
+    }
+
     if (req.method === "GET" && url.pathname === "/admin") {
       if (!requireAuth(req, res)) {
         return;
       }
-      serveFile(res, path.join(privateDir, "admin.html"));
+      fs.readFile(path.join(privateDir, "admin.html"), "utf8", (error, html) => {
+        if (error) {
+          send(res, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
+          return;
+        }
+        const session = getSession(req);
+        const sessionScript = `<script>window.HG_SESSION=${JSON.stringify({
+          username: session.username,
+          role: session.role,
+        }).replace(/</g, "\\u003c")};</script>`;
+        send(res, 200, html.replace("</head>", `${sessionScript}</head>`), { "Content-Type": "text/html; charset=utf-8" });
+      });
+      return;
+    }
+
+    if (req.method === "GET" && url.pathname.startsWith("/admin/")) {
+      if (!requireAuth(req, res)) {
+        return;
+      }
+      fs.readFile(path.join(privateDir, "admin.html"), "utf8", (error, html) => {
+        if (error) {
+          send(res, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
+          return;
+        }
+        const session = getSession(req);
+        const sessionScript = `<script>window.HG_SESSION=${JSON.stringify({
+          username: session.username,
+          role: session.role,
+        }).replace(/</g, "\\u003c")};</script>`;
+        send(res, 200, html.replace("</head>", `${sessionScript}</head>`), { "Content-Type": "text/html; charset=utf-8" });
+      });
       return;
     }
 
@@ -178,18 +225,19 @@ const server = http.createServer(async (req, res) => {
       const form = new URLSearchParams(body);
       const username = form.get("username") || "";
       const password = form.get("password") || "";
-      if (!adminPassword || !safeEqual(username, adminUsername) || !safeEqual(password, adminPassword)) {
+      const sessionUser = verifyCredentials(username, password);
+      if (!sessionUser) {
         redirect(res, "/login?error=1");
         return;
       }
       send(res, 302, "", {
         Location: "/admin",
-        "Set-Cookie": `hg_session=${encodeURIComponent(createSession())}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800`,
+        "Set-Cookie": `hg_session=${encodeURIComponent(createSession(sessionUser))}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800`,
       });
       return;
     }
 
-    if (req.method === "POST" && url.pathname === "/api/logout") {
+    if ((req.method === "POST" || req.method === "GET") && url.pathname === "/api/logout") {
       destroySession(req);
       sendJson(res, 200, { ok: true });
       return;

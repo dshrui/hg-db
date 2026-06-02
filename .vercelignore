@@ -7,5 +7,6 @@
 !private/admin.html
 !index.html
 !login.html
+!admin-client.js
 !package.json
 !vercel.json

@@ -11,6 +11,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "admin-client.js",
+      "use": "@vercel/static"
+    },
+    {
       "src": "api/admin.mjs",
       "use": "@vercel/node"
     },
@@ -36,12 +40,16 @@
       }
     },
     {
-      "src": "/admin",
+      "src": "/admin(?:/.*)?",
       "dest": "/api/admin.mjs"
     },
     {
       "src": "/login",
       "dest": "/login.html"
+    },
+    {
+      "src": "/admin-client.js",
+      "dest": "/admin-client.js"
     },
     {
       "src": "/api/login",
