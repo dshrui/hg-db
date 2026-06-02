@@ -337,6 +337,14 @@
     }
   }
 
+  function requireAdminAction() {
+    if (session.role === "admin") {
+      return true;
+    }
+    setSyncStatus("Admin role required for this action.", true);
+    return false;
+  }
+
   function scheduleSheetSave() {
     if (syncPaused) {
       return;
@@ -638,6 +646,10 @@
     document.querySelector("[data-session-role]").textContent = session.role === "admin" ? "Admin role" : "Ops role";
     document.querySelectorAll(".admin-only").forEach(function (node) {
       node.classList.toggle("hidden", session.role !== "admin");
+      node.setAttribute("aria-hidden", session.role !== "admin" ? "true" : "false");
+      node.querySelectorAll("button, input, select, textarea").forEach(function (control) {
+        control.disabled = session.role !== "admin";
+      });
     });
   }
 
@@ -728,7 +740,11 @@
   });
 
   document.querySelector("[data-pull-sheet]").addEventListener("click", pullFromSheet);
-  document.querySelector("[data-push-sheet]").addEventListener("click", function () { pushToSheet(true); });
+  document.querySelector("[data-push-sheet]").addEventListener("click", function () {
+    if (requireAdminAction()) {
+      pushToSheet(true);
+    }
+  });
   document.querySelector("[data-logout]").addEventListener("click", function () {
     fetch("/api/logout", { method: "POST" }).finally(function () {
       window.location.href = "/login";
@@ -736,6 +752,9 @@
   });
 
   document.querySelector("[data-export-database]").addEventListener("click", function () {
+    if (!requireAdminAction()) {
+      return;
+    }
     var blob = new Blob([JSON.stringify(database, null, 2)], { type: "application/json" });
     var url = URL.createObjectURL(blob);
     var link = document.createElement("a");
@@ -748,7 +767,7 @@
   });
 
   document.querySelector("[data-import-database-button]").addEventListener("click", function () {
-    if (session.role !== "admin") {
+    if (!requireAdminAction()) {
       return;
     }
     var box = document.querySelector("[data-import-database]");
@@ -762,7 +781,7 @@
   });
 
   document.querySelector("[data-clear-database]").addEventListener("click", function () {
-    if (session.role !== "admin") {
+    if (!requireAdminAction()) {
       return;
     }
     if (!window.confirm("Clear the local ops database in this browser?")) {
