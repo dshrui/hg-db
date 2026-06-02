@@ -43,8 +43,47 @@
     }
 
     .page {
-      max-width: 1280px;
-      margin: 0 auto;
+      width: 100%;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 20px 16px;
+      overflow-y: auto;
+      background: #ffffff;
+      border-right: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar-brand {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sidebar-brand strong {
+      display: block;
+      color: var(--brand-dark);
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .sidebar-brand span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .main {
+      min-width: 0;
       padding: 24px 18px 48px;
     }
 
@@ -101,7 +140,9 @@
     }
 
     .session-card {
-      min-width: 230px;
+      width: 100%;
+      min-width: 0;
+      margin-bottom: 16px;
       padding: 14px;
       background: var(--soft);
       border: 1px solid var(--line);
@@ -116,23 +157,18 @@
     }
 
     .nav {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
       gap: 8px;
-      margin: 16px 0;
-      padding: 10px;
-      background: rgba(238, 242, 245, 0.95);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--line);
-      border-radius: 8px;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
     }
 
     .nav a,
     .nav button,
     .button {
+      width: 100%;
       min-height: 38px;
       padding: 8px 12px;
       color: var(--brand-dark);
@@ -142,6 +178,7 @@
       font-weight: 700;
       font-size: 13px;
       text-decoration: none;
+      text-align: left;
       cursor: pointer;
     }
 
@@ -424,6 +461,7 @@
     }
 
     @media (max-width: 900px) {
+      .page,
       .topbar,
       .grid.metrics,
       .grid.two,
@@ -431,8 +469,14 @@
         grid-template-columns: 1fr;
       }
 
-      .session-card {
-        min-width: 0;
+      .sidebar {
+        position: static;
+        height: auto;
+        box-shadow: none;
+      }
+
+      .nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -442,6 +486,7 @@
       }
 
       .nav,
+      .sidebar,
       .sync-strip,
       .actions,
       button {
@@ -458,28 +503,37 @@
 </head>
 <body>
   <div class="page">
-    <div class="topbar">
-      <div>
-        <p class="eyebrow">HG Services Ops Control</p>
-        <h1>Marketing Operations Command Center</h1>
-        <p class="subtitle">Run onboarding, delegated tasks, content production, June planning, approvals, reporting, and Google Sheet sync from one workflow.</p>
+    <div class="sidebar" aria-label="Admin workspace navigation">
+      <div class="sidebar-brand">
+        <strong>HG Ops Control</strong>
+        <span>June marketing launch workspace</span>
       </div>
+
       <div class="session-card">
         <span>Signed in as</span>
         <strong data-session-label>Loading...</strong>
         <span data-session-role></span>
       </div>
+
+      <div class="nav" aria-label="Admin workflow navigation">
+        <a href="/" data-nav="dashboard">Dashboard</a>
+        <a href="/admin/onboarding" data-nav="onboarding">Onboarding</a>
+        <a href="/admin/tasks" data-nav="tasks">Tasks</a>
+        <a href="/admin/content" data-nav="content">Content</a>
+        <a href="/admin/calendar" data-nav="calendar">Calendar</a>
+        <a href="/admin/reports" data-nav="reports">Reports</a>
+        <button type="button" class="danger" data-logout>Logout</button>
+      </div>
     </div>
 
-    <div class="nav" aria-label="Admin workflow navigation">
-      <a href="/admin" data-nav="dashboard">Dashboard</a>
-      <a href="/admin/onboarding" data-nav="onboarding">Onboarding</a>
-      <a href="/admin/tasks" data-nav="tasks">Tasks</a>
-      <a href="/admin/content" data-nav="content">Content</a>
-      <a href="/admin/calendar" data-nav="calendar">Calendar</a>
-      <a href="/admin/reports" data-nav="reports">Reports</a>
-      <button type="button" class="danger" data-logout>Logout</button>
-    </div>
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <p class="eyebrow">HG Services Ops Control</p>
+          <h1>Marketing Operations Command Center</h1>
+          <p class="subtitle">Run onboarding, delegated tasks, content production, June planning, approvals, reporting, and Google Sheet sync from one workflow.</p>
+        </div>
+      </div>
 
     <div class="sync-strip" aria-live="polite">
       <span data-sync-status>Loading database...</span>
@@ -672,6 +726,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 

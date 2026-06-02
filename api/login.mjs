@@ -12,7 +12,7 @@ export async function POST(request) {
   }
 
   try {
-    return redirectResponse("/admin", {
+    return redirectResponse("/", {
       "Set-Cookie": createSessionCookie(request, sessionUser),
     });
   } catch (error) {

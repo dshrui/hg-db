@@ -106,6 +106,24 @@ function serveFile(res, filePath) {
   });
 }
 
+function serveAdminApp(req, res) {
+  if (!requireAuth(req, res)) {
+    return;
+  }
+  fs.readFile(path.join(privateDir, "admin.html"), "utf8", (error, html) => {
+    if (error) {
+      send(res, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
+      return;
+    }
+    const session = getSession(req);
+    const sessionScript = `<script>window.HG_SESSION=${JSON.stringify({
+      username: session.username,
+      role: session.role,
+    }).replace(/</g, "\\u003c")};</script>`;
+    send(res, 200, html.replace("</head>", `${sessionScript}</head>`), { "Content-Type": "text/html; charset=utf-8" });
+  });
+}
+
 function collectBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";
@@ -168,7 +186,7 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
     if (req.method === "GET" && url.pathname === "/") {
-      serveFile(res, path.join(rootDir, "index.html"));
+      serveAdminApp(req, res);
       return;
     }
 
@@ -183,40 +201,12 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "GET" && url.pathname === "/admin") {
-      if (!requireAuth(req, res)) {
-        return;
-      }
-      fs.readFile(path.join(privateDir, "admin.html"), "utf8", (error, html) => {
-        if (error) {
-          send(res, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
-          return;
-        }
-        const session = getSession(req);
-        const sessionScript = `<script>window.HG_SESSION=${JSON.stringify({
-          username: session.username,
-          role: session.role,
-        }).replace(/</g, "\\u003c")};</script>`;
-        send(res, 200, html.replace("</head>", `${sessionScript}</head>`), { "Content-Type": "text/html; charset=utf-8" });
-      });
+      serveAdminApp(req, res);
       return;
     }
 
     if (req.method === "GET" && url.pathname.startsWith("/admin/")) {
-      if (!requireAuth(req, res)) {
-        return;
-      }
-      fs.readFile(path.join(privateDir, "admin.html"), "utf8", (error, html) => {
-        if (error) {
-          send(res, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
-          return;
-        }
-        const session = getSession(req);
-        const sessionScript = `<script>window.HG_SESSION=${JSON.stringify({
-          username: session.username,
-          role: session.role,
-        }).replace(/</g, "\\u003c")};</script>`;
-        send(res, 200, html.replace("</head>", `${sessionScript}</head>`), { "Content-Type": "text/html; charset=utf-8" });
-      });
+      serveAdminApp(req, res);
       return;
     }
 
@@ -231,7 +221,7 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       send(res, 302, "", {
-        Location: "/admin",
+        Location: "/",
         "Set-Cookie": `hg_session=${encodeURIComponent(createSession(sessionUser))}; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800`,
       });
       return;
