@@ -283,6 +283,52 @@
       grid-template-columns: repeat(3, 1fr);
     }
 
+    .reference-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .reference-list li {
+      padding: 10px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .reference-list strong {
+      display: block;
+      color: var(--brand-dark);
+      font-size: 13px;
+    }
+
+    .reference-list span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .source-links a {
+      padding: 7px 10px;
+      color: var(--brand-dark);
+      background: #eaf4fb;
+      border: 1px solid #b9d9ee;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
     .card {
       padding: 16px;
     }
@@ -588,6 +634,80 @@
       </div>
 
       <div class="view" data-view="onboarding">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>HG Client Snapshot</h2>
+              <p>Use this as the internal positioning reference when writing captions, choosing assets, and deciding what proof to request from HG.</p>
+            </div>
+            <span class="tag">Client context</span>
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <h3>Company Context</h3>
+              <p class="status-note">HG is positioned as a contractor support company based in Puchong, serving mall management, retailers, tenants, main contractors, and property-related clients.</p>
+            </div>
+            <div class="card">
+              <h3>Credibility Angles</h3>
+              <p class="status-note">Use concise proof points such as since 2015, 100+ malls, in-house teams, certified or compliant capability, and day/night standby operations where relevant.</p>
+            </div>
+            <div class="card">
+              <h3>Month 1 Lead Message</h3>
+              <p class="status-note">Lead with office and residential reinstatement, restoration, move-out handover, make-good works, and managed-property readiness.</p>
+            </div>
+            <div class="card">
+              <h3>Supporting Services</h3>
+              <p class="status-note">Cross-reference rorobin, lorry, scaffold, hoarding, fit-out support, printing, signage, debris handling, and site coordination as capability proof.</p>
+            </div>
+          </div>
+          <div class="source-links" aria-label="HG website source links">
+            <a href="https://www.hggroup.com.my/" target="_blank" rel="noreferrer">HG homepage</a>
+            <a href="https://www.hggroup.com.my/about" target="_blank" rel="noreferrer">HG about</a>
+            <a href="https://www.hggroup.com.my/services" target="_blank" rel="noreferrer">HG services</a>
+            <a href="https://www.hggroup.com.my/reinstatementservices" target="_blank" rel="noreferrer">HG reinstatement</a>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Launch Setup Reference</h2>
+              <p>This restores the original onboarding logic from the proposal tracker so the editable task table below has the right HG context.</p>
+            </div>
+            <span class="tag">Month 1 setup</span>
+          </div>
+          <div class="grid two">
+            <ul class="reference-list">
+              <li>
+                <strong>Client onboarding</strong>
+                <span>Confirm the main client contact, final approval person, approved scope, Month 1 objective, and weekly approval rhythm.</span>
+              </li>
+              <li>
+                <strong>Access and channel setup</strong>
+                <span>Confirm Facebook, Instagram, XiaoHongShu, and TikTok access, website link, WhatsApp/contact path, and basic insights access.</span>
+              </li>
+              <li>
+                <strong>Positioning and message alignment</strong>
+                <span>Lock the core message around reliable contractor support for office/residential reinstatement, restoration, handover, and site support works.</span>
+              </li>
+            </ul>
+            <ul class="reference-list">
+              <li>
+                <strong>Channel audit and profile optimization</strong>
+                <span>Review profile copy, recent content, contact visibility, pinned/highlight structure, and search-friendly wording for each active channel.</span>
+              </li>
+              <li>
+                <strong>Asset collection and sorting</strong>
+                <span>Request 20 to 30 usable project photos or clips, then sort by before, work-in-progress, after, team, equipment, and service category.</span>
+              </li>
+              <li>
+                <strong>Content rhythm</strong>
+                <span>Use a weekly mix of proof, education, capability, and authority content, including feed posts, XiaoHongShu notes, and 2 to 4 Stories where suitable.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <div class="section">
           <div class="section-head">
             <div>
